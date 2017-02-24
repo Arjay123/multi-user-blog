@@ -23,7 +23,7 @@ class Handler(webapp2.RequestHandler):
 
 class MainPage(Handler):
     def get(self):
-        self.write("Hello, world!")
+    	self.render("base.html")
 
 
 app = webapp2.WSGIApplication([('/', MainPage)])
