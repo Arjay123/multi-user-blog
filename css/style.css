@@ -1,0 +1,65 @@
+/*
+
+	black: #272727;
+	grey: #696773;
+	white: #EFF1F3;
+	yellow: #FED766;
+	blue: #009FB7;
+
+*/
+body{
+	background-color: #EFF1F3;
+}
+
+.row-eq-height {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+}
+
+.blog-header{
+	background-color: #272727;
+	color: #EFF1F3;
+	padding-top: 1em;
+	padding-bottom: 3em;
+}
+
+.navbar {
+	background-color: #272727;
+	color: #EFF1F3;
+}
+
+.navbar-header {
+	height: 100%;
+}
+
+.navbar-toggle {
+	margin-top: auto;
+	margin-bottom: auto;
+	vertical-align: center;
+	height:100%;
+
+	
+}
+
+.nav-link {
+	background-color: #272727;
+	color: #EFF1F3;
+}
+
+
+.nav-link:focus,
+.nav-link:hover {
+	background-color: transparent;
+	color: #272727;
+}
+
+.icon-bar {
+	background-color: #EFF1F3;
+}
+
+.navbar-collapse {
+	border-top:none;
+    box-shadow:none;
+}
