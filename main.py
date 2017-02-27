@@ -23,7 +23,7 @@ class Handler(webapp2.RequestHandler):
 
 class MainPage(Handler):
     def get(self):
-    	self.render("base.html")
+    	self.render("blog.html")
 
 
 app = webapp2.WSGIApplication([('/', MainPage)])

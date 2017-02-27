@@ -63,3 +63,37 @@ body{
 	border-top:none;
     box-shadow:none;
 }
+
+
+.content {
+	margin-top: 20px;
+}
+
+.post-image {
+	max-width: 100%;
+}
+
+.pull-down {
+	margin-bottom: 0;
+	margin-top: auto;
+}
+
+.pull-center {
+	margin-top: auto;
+	margin-bottom: auto;
+}
+
+.post {
+	padding-bottom: 20px;
+}
+.post-summary {
+	max-width: 100%;
+}
+
+
+.post-summary-header {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+
