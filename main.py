@@ -17,17 +17,21 @@ jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
                                autoescape=True)
 
 secret = "imsosecret"
-
-
 USER_COOKIE_KEY = "user"
+
+
+def render_str(template, **params):
+        t = jinja_env.get_template(template)
+        return t.render(params)
 
 class Handler(webapp2.RequestHandler):
     def write(self, *a, **kw):
         self.response.out.write(*a, **kw)
 
+    
     def render_str(self, template, **params):
-        t = jinja_env.get_template(template)
-        return t.render(params)
+        params['user'] = self.user
+        return render_str(template, **params)
 
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
@@ -49,7 +53,10 @@ class Handler(webapp2.RequestHandler):
         cookie_val = self.request.cookies.get(name)
         return cookie_val and self.check_secure_val(cookie_val)
 
-
+    def initialize(self, *a, **kw):
+        webapp2.RequestHandler.initialize(self, *a, **kw)
+        uid = self.get_cookie(USER_COOKIE_KEY)
+        self.user = uid and User.get_by_id(int(uid))
 
 
 
@@ -80,10 +87,7 @@ class Post(db.Model):
 
 class UserPage(UserSettingsHandler):
     def get(self):
-        user_id = self.get_cookie(USER_COOKIE_KEY)
-        if user_id:
-            user = User.get_by_id(int(user_id))
-            self.render("user.html", user=user)
+        self.render("user.html")
         
 
 class SignupPage(UserSettingsHandler):
