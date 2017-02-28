@@ -19,7 +19,7 @@ jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
 secret = "imsosecret"
 
 
-
+USER_COOKIE_KEY = "user"
 
 class Handler(webapp2.RequestHandler):
     def write(self, *a, **kw):
@@ -32,13 +32,25 @@ class Handler(webapp2.RequestHandler):
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
 
-    def make_secure_val(val):
+    def make_secure_val(self, val):
         return '%s|%s' % (val, hmac.new(secret, val).hexdigest())
 
-    def check_secure_val(secure_val):
+    def check_secure_val(self, secure_val):
         val = secure_val.split('|')[0]
-        if secure_val == make_secure_val(val):
+        if secure_val == self.make_secure_val(val):
             return val
+
+    def set_cookie(self, name, value):
+        h = self.make_secure_val(value)
+        self.response.headers.add_header('Set-Cookie', 
+                '%s=%s; Path=/' % (name, str(h)))
+
+    def get_cookie(self, name):
+        cookie_val = self.request.cookies.get(name)
+        return cookie_val and self.check_secure_val(cookie_val)
+
+
+
 
 
 class UserSettingsHandler(Handler):
@@ -66,9 +78,13 @@ class Post(db.Model):
 
 
 
-class UserPage(Handler):
+class UserPage(UserSettingsHandler):
     def get(self):
-        self.render("user.html")
+        user_id = self.get_cookie(USER_COOKIE_KEY)
+        if user_id:
+            user = User.get_by_id(int(user_id))
+            self.render("user.html", user=user)
+        
 
 class SignupPage(UserSettingsHandler):
     def get(self):
@@ -144,10 +160,27 @@ class SignupPage(UserSettingsHandler):
 
             
             user.put()
+
+            self.set_cookie(USER_COOKIE_KEY, str(user.key().id()))
             self.redirect("/")
 
 
+class UserImageHandler(Handler):
+    def get(self):
+        img_id = self.request.get("img_id")
+        if img_id and img_id.isdigit():
 
+            user = User.get_by_id(int(img_id))
+            
+
+            if user and user.avatar_image:
+                self.response.headers["Content-Type"] = "image/jpeg"
+                self.response.out.write(user.avatar_image)
+            else:
+                print "poopoo"
+
+        else:
+            print "poop"
 
 class ImageHandler(Handler):
     def get(self):
@@ -194,5 +227,6 @@ class NewPostPage(Handler):
 app = webapp2.WSGIApplication([('/', MainPage),
                                ('/newpost', NewPostPage),
                                ('/img', ImageHandler),
+                               ('/userimg', UserImageHandler),
                                ('/signup', SignupPage),
                                ('/user', UserPage)])
