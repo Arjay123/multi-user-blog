@@ -98,4 +98,8 @@ body{
 	flex-wrap: wrap;
 }
 
+.error {
+	color: red;
+}
+
 
