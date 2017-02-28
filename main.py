@@ -2,7 +2,7 @@ import os
 import jinja2
 import webapp2
 
-from google.appengine.ext import ndb
+from google.appengine.ext import db
 from google.appengine.api import images
 
 
@@ -22,16 +22,39 @@ class Handler(webapp2.RequestHandler):
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
 
-class Post(ndb.Model):
-	title = ndb.StringProperty(required=True)
-	content = ndb.TextProperty(required=True)
-	header_image = ndb.BlobProperty()
-	created = ndb.DateTimeProperty(auto_now_add=True)
+
+
+class Post(db.Model):
+	title = db.StringProperty(required=True)
+	content = db.TextProperty(required=True)
+	header_image = db.BlobProperty()
+	created = db.DateTimeProperty(auto_now_add=True)
+
+
+class ImageHandler(Handler):
+	def get(self):
+		img_id = self.request.get("img_id")
+		if img_id and img_id.isdigit():
+
+			post = Post.get_by_id(int(img_id))
+			
+
+			if post and post.header_image:
+				self.response.headers["Content-Type"] = "image/jpeg"
+				self.response.out.write(post.header_image)
+			else:
+				print "poopoo"
+
+		else:
+			print "poop"
+
 
 
 class MainPage(Handler):
     def get(self):
-    	self.render("blog.html")
+    	posts_cursor = Post.gql("ORDER BY created DESC")
+    	posts = posts_cursor.fetch(limit=10)
+    	self.render("blog.html", posts=posts)
 
 class NewPostPage(Handler):
 	def get(self):
@@ -48,10 +71,10 @@ class NewPostPage(Handler):
 
 		post = Post(title=title, content=content)
 		post.header_image = header_image
-
 		post.put()
 
 
 
 app = webapp2.WSGIApplication([('/', MainPage),
-							   ('/newpost', NewPostPage),])
+							   ('/newpost', NewPostPage),
+							   ('/img', ImageHandler)])

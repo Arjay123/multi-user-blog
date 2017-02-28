@@ -5,6 +5,28 @@
 
 
 <div class="row posts">
+
+	{% for post in posts %}
+	<div class="post col-xs-12 col-sm-6 col-md-4">
+		<div class="row row-eq-height">
+			<div class="col-xs-12 post-summary">
+				<div class="row post-summary-header">
+					<img class="col-xs-12 img-responsive post-image" src="/img?img_id={{post.key().id()}}">
+					<div class="col-xs-12 post-summary-title"><h3>{{post.title}}</h3></div>
+					<div class="col-xs-12"><h6>Author</h6></div>
+				</div>
+				<div class="row post-summary-content">
+					<div class="col-xs-12 post-summary-content"><p>{{post.content}}</p></div>
+				</div>
+				<div class="row row-eq-height post-summary-footer">
+					<div class="col-xs-6 post-summary-date pull-center"><h5><small>{{post.created.date().strftime("%b %d, %Y")}}</small></h5></div>
+					<div class="col-xs-6 post-summary-link text-right pull-center"><a href="#">Read more...</a></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+
 	<div class="post col-xs-12 col-sm-6 col-md-4">
 		<div class="row row-eq-height">
 			<div class="col-xs-12 post-summary">
