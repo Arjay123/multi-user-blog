@@ -42,4 +42,16 @@ class User(db.Model):
                     email = email,
                     avatar_image=avatar_image)
 
+
+    def valid_pw(self, username, pw):
+        salt = self.pw_hash.split(',')[0]
+        return self.pw_hash == make_pw_hash(username, pw, salt)
+
+
+    @classmethod
+    def login(cls, username, pw):
+        u = User.gql("WHERE username='%s'" % username).get()
+        if u and u.valid_pw(username, pw):
+            return u
+
     

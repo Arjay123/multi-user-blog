@@ -94,6 +94,13 @@ class Handler(webapp2.RequestHandler):
         self.user = uid and User.get_by_id(int(uid))
 
 
+    def login(self, uid):
+        self.set_cookie(USER_COOKIE_KEY, uid)
+
+    def logout(self):
+        self.set_cookie(USER_COOKIE_KEY, "")
+
+
 """
 Handler base class for any pages that edit the User object in the db
 """
@@ -118,17 +125,24 @@ Settings page, user can change some of their information from here
 class UserPage(UserSettingsHandler):
     def get(self):
         self.render("user.html")
-        
+
+'''
+Logout page
+'''
+class LogoutPage(Handler):
+    def get(self):
+        self.logout()
+        self.redirect("/")
 
 """
-New user signup page
+Login/New user signup page
 """
 class SignupPage(UserSettingsHandler):
     def get(self):
 
         # this page is not accessible by a logged in user
         if self.user:
-            self.redirect("/blog.html")
+            self.redirect("/")
             return
 
         self.render("signup.html")
@@ -137,7 +151,26 @@ class SignupPage(UserSettingsHandler):
 
         # get submitted values
         if self.request.get("frm_submit") == "login":
-            pass
+            username = self.request.get("login_username")
+            password = self.request.get("login_password")
+
+            retry_params = {
+                "login_username": username,
+                "login_signup": False
+            }
+
+            if not (username and password):
+                self.render("signup.html", **retry_params)
+                return
+
+
+            user = User.login(username, password)
+            if not user:
+                return
+
+            self.login(str(user.key().id()))
+            self.redirect("/")
+
         else:
 
             username = self.request.get("username")
@@ -279,4 +312,5 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/postimg', PostImageHandler),
                                ('/userimg', UserImageHandler),
                                ('/signup', SignupPage),
-                               ('/user', UserPage)])
+                               ('/user', UserPage),
+                               ('/logout', LogoutPage)])
