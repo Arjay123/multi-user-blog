@@ -34,8 +34,11 @@
 
 						{% if not user %}
 
-						<li><a class="nav-link" href="#">Login/Signup</a></li> 
+						<li><a class="nav-link" href="/signup">Login/Signup</a></li> 
 
+						{% else %}
+
+						<li><a class="nav-link" href="/logout">Logout</a></li>
 						{% endif %}
 					</ul>
 				</div>
