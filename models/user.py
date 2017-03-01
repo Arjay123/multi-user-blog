@@ -41,3 +41,5 @@ class User(db.Model):
                     pw_hash = pw_hash,
                     email = email,
                     avatar_image=avatar_image)
+
+    

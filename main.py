@@ -6,7 +6,7 @@ import hmac
 import random
 import hashlib
 
-from models.user import User
+from models.user import User, Post
 from string import letters
 from google.appengine.ext import db
 from google.appengine.api import images
@@ -24,43 +24,80 @@ def render_str(template, **params):
         t = jinja_env.get_template(template)
         return t.render(params)
 
+"""
+Base class for page handlers, contains common methods
+needed by any handler
+"""
 class Handler(webapp2.RequestHandler):
+
+
     def write(self, *a, **kw):
         self.response.out.write(*a, **kw)
 
-    
+
+    """ 
+    before rendering the template, gets stored user object
+    and passes to page params
+    """
     def render_str(self, template, **params):
         params['user'] = self.user
         return render_str(template, **params)
 
+
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
 
+
+    """
+    create cookie value by hashing value w/ secret key
+    return: value and hashed value in the form '%s|%s'
+    """
     def make_secure_val(self, val):
         return '%s|%s' % (val, hmac.new(secret, val).hexdigest())
 
+
+    """
+    check cookie value w/ hash value to ensure it hasn't been modified by
+    the requesting user
+
+    return: cookie value if valid, else None
+    """
     def check_secure_val(self, secure_val):
         val = secure_val.split('|')[0]
         if secure_val == self.make_secure_val(val):
             return val
 
+    """
+    sets cookie value
+    """
     def set_cookie(self, name, value):
         h = self.make_secure_val(value)
         self.response.headers.add_header('Set-Cookie', 
                 '%s=%s; Path=/' % (name, str(h)))
 
+    """
+    gets valid cookie value
+    """
     def get_cookie(self, name):
         cookie_val = self.request.cookies.get(name)
         return cookie_val and self.check_secure_val(cookie_val)
 
+
+    """
+    called before loading page, if user is logged in, gets user from db
+    using the id stored in USER_COOKIE_KEY cookie
+    """
     def initialize(self, *a, **kw):
         webapp2.RequestHandler.initialize(self, *a, **kw)
         uid = self.get_cookie(USER_COOKIE_KEY)
         self.user = uid and User.get_by_id(int(uid))
 
 
-
+"""
+Handler base class for any pages that edit the User object in the db
+"""
 class UserSettingsHandler(Handler):
+
     USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
     def valid_username(self, username):
         return username and self.USER_RE.match(username)
@@ -74,27 +111,30 @@ class UserSettingsHandler(Handler):
         return not email or self.EMAIL_RE.match(email)
 
 
-
-
-class Post(db.Model):
-    title = db.StringProperty(required=True)
-    content = db.TextProperty(required=True)
-    header_image = db.BlobProperty()
-    created = db.DateTimeProperty(auto_now_add=True)
-
-
-
-
+"""
+Settings page, user can change some of their information from here
+"""
 class UserPage(UserSettingsHandler):
     def get(self):
         self.render("user.html")
         
 
+"""
+New user signup page
+"""
 class SignupPage(UserSettingsHandler):
     def get(self):
+
+        # this page is not accessible by a logged in user
+        if self.user:
+            self.redirect("/blog.html")
+            return
+
         self.render("signup.html")
 
     def post(self):
+
+        # get submitted values
         username = self.request.get("username")
         first_name = self.request.get("first_name")
         last_name = self.request.get("last_name")
@@ -115,6 +155,7 @@ class SignupPage(UserSettingsHandler):
                          "last_name": last_name,
                          "email": email }
 
+        # check if all submitted params are valid
         if not self.valid_username(username):
             valid = False
             retry_params["username_error"] = "Username is invalid"
@@ -138,12 +179,13 @@ class SignupPage(UserSettingsHandler):
             valid = False
             retry_params["email_error"] = "Email is invalid"
         
-
+        # if any params invalid, reload signup page w/ previous values
         if not valid:
             self.render("signup.html", **retry_params)
 
         else:
 
+            # check if username used, reload signup page
             if User.username_in_use(username):
                 retry_params["username_error"] = "Username in use"
                 self.render("signup.html", **retry_params)
@@ -162,13 +204,14 @@ class SignupPage(UserSettingsHandler):
                 avatar_image = images.resize(avatar_image, 150, 150)
                 user.avatar_image = avatar_image
 
-            
             user.put()
 
             self.set_cookie(USER_COOKIE_KEY, str(user.key().id()))
             self.redirect("/")
 
-
+"""
+Handler for rendering user avatar images stored as BlobProperty values
+"""
 class UserImageHandler(Handler):
     def get(self):
         img_id = self.request.get("img_id")
@@ -176,42 +219,40 @@ class UserImageHandler(Handler):
 
             user = User.get_by_id(int(img_id))
             
-
             if user and user.avatar_image:
                 self.response.headers["Content-Type"] = "image/jpeg"
                 self.response.out.write(user.avatar_image)
-            else:
-                print "poopoo"
 
-        else:
-            print "poop"
-
-class ImageHandler(Handler):
+"""
+Handler for rendering post header images stored as BlobProperty values
+"""
+class PostImageHandler(Handler):
     def get(self):
         img_id = self.request.get("img_id")
         if img_id and img_id.isdigit():
 
             post = Post.get_by_id(int(img_id))
             
-
             if post and post.header_image:
                 self.response.headers["Content-Type"] = "image/jpeg"
                 self.response.out.write(post.header_image)
-            else:
-                print "poopoo"
 
-        else:
-            print "poop"
-
+"""
+Home page handler
+"""
 class MainPage(Handler):
     def get(self):
-        posts_cursor = Post.gql("ORDER BY created DESC")
-        posts = posts_cursor.fetch(limit=10)
+        posts = Post.all().order('-created')
         self.render("blog.html", posts=posts)
 
+
+"""
+Handler for new post submissions
+"""
 class NewPostPage(Handler):
     def get(self):
         self.render("newpost.html")
+
 
     def post(self):
         title = self.request.get("title")
@@ -219,8 +260,6 @@ class NewPostPage(Handler):
 
         header_image = self.request.get("img")
         header_image = images.resize(header_image, 500, 200)
-
-        valid = True
 
         post = Post(title=title, content=content)
         post.header_image = header_image
@@ -230,7 +269,7 @@ class NewPostPage(Handler):
 
 app = webapp2.WSGIApplication([('/', MainPage),
                                ('/newpost', NewPostPage),
-                               ('/img', ImageHandler),
+                               ('/postimg', PostImageHandler),
                                ('/userimg', UserImageHandler),
                                ('/signup', SignupPage),
                                ('/user', UserPage)])
