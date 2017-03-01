@@ -6,7 +6,8 @@ import hmac
 import random
 import hashlib
 
-from models.user import User, Post
+from models.user import User
+from models.post import Post
 from string import letters
 from google.appengine.ext import db
 from google.appengine.api import images
