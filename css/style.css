@@ -7,11 +7,16 @@
 	blue: #009FB7;
 
 */
-body{
-	background-color: #EFF1F3;
+
+html {
+  position: relative;
+  min-height: 100%;
 }
 
-
+body{
+	background-color: #EFF1F3;
+	margin-bottom: 60px;
+}
 
 .row-eq-height {
   display: -webkit-box;
@@ -25,6 +30,16 @@ body{
 	color: #EFF1F3;
 	padding-top: 1em;
 	padding-bottom: 3em;
+}
+
+.blog-footer {
+	position: absolute;
+	bottom: 0;
+    height: 60px;
+    background-color: #272727;
+	color: #EFF1F3;
+	padding-top: 1em;
+	padding-bottom: 1em;
 }
 
 .navbar {
@@ -102,4 +117,15 @@ body{
 	color: red;
 }
 
+.tab-content {
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-radius: 0 0 4px 4px;
+    padding: 10px;
+}
+
+.nav-tabs {
+    margin-bottom: 0;
+}
 

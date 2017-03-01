@@ -31,7 +31,12 @@
 						<li class="active"><a class="nav-link" href="/">Home</a></li>
 						<li><a class="nav-link" href="#">Authors</a></li>
 						<li><a class="nav-link" href="#">About</a></li>
-						<li><a class="nav-link" href="#">Login/Signup</a></li>
+
+						{% if not user %}
+
+						<li><a class="nav-link" href="#">Login/Signup</a></li> 
+
+						{% endif %}
 					</ul>
 				</div>
 				<!-- /.navbar-collapse -->
@@ -54,6 +59,12 @@
 		{% block content %}
 		{% endblock %}
 	</div>
+
+	<footer class="blog-footer">
+		<div class="container">
+			Footer
+		</div>
+	</footer>
 
 	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
