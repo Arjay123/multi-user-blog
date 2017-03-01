@@ -136,79 +136,85 @@ class SignupPage(UserSettingsHandler):
     def post(self):
 
         # get submitted values
-        username = self.request.get("username")
-        first_name = self.request.get("first_name")
-        last_name = self.request.get("last_name")
-        password = self.request.get("password")
-        confirm_pw = self.request.get("confirm_pw")
-        email = self.request.get("email")
-
-        valid = True
-        username_error = ""
-        first_name_error = ""
-        last_name_error = ""
-        password_error = ""
-        confirm_pw_error = ""
-        email_error = ""
-
-        retry_params = { "username": username,
-                         "first_name": first_name,
-                         "last_name": last_name,
-                         "email": email }
-
-        # check if all submitted params are valid
-        if not self.valid_username(username):
-            valid = False
-            retry_params["username_error"] = "Username is invalid"
-
-        if not first_name:
-            valid = False
-            retry_params["first_name_error"] = "Please enter a first name"
-
-        if not last_name:
-            valid = False
-            retry_params["last_name_error"] = "Please enter a last name"
-
-        if not self.valid_password(password):
-            valid = False
-            retry_params["password_error"] = "Password is invalid"
-        elif password != confirm_pw:
-            valid = False
-            retry_params["confirm_pw_error"] = "Passwords do not match"
-
-        if not self.valid_email(email):
-            valid = False
-            retry_params["email_error"] = "Email is invalid"
-        
-        # if any params invalid, reload signup page w/ previous values
-        if not valid:
-            self.render("signup.html", **retry_params)
-
+        if self.request.get("frm_submit") == "login":
+            pass
         else:
 
-            # check if username used, reload signup page
-            if User.username_in_use(username):
-                retry_params["username_error"] = "Username in use"
+            username = self.request.get("username")
+            first_name = self.request.get("first_name")
+            last_name = self.request.get("last_name")
+            password = self.request.get("password")
+            confirm_pw = self.request.get("confirm_pw")
+            email = self.request.get("email")
+
+            valid = True
+            username_error = ""
+            first_name_error = ""
+            last_name_error = ""
+            password_error = ""
+            confirm_pw_error = ""
+            email_error = ""
+
+            retry_params = { "username": username,
+                             "first_name": first_name,
+                             "last_name": last_name,
+                             "email": email,
+                             "signup": True
+                            }
+
+            # check if all submitted params are valid
+            if not self.valid_username(username):
+                valid = False
+                retry_params["username_error"] = "Username is invalid"
+
+            if not first_name:
+                valid = False
+                retry_params["first_name_error"] = "Please enter a first name"
+
+            if not last_name:
+                valid = False
+                retry_params["last_name_error"] = "Please enter a last name"
+
+            if not self.valid_password(password):
+                valid = False
+                retry_params["password_error"] = "Password is invalid"
+            elif password != confirm_pw:
+                valid = False
+                retry_params["confirm_pw_error"] = "Passwords do not match"
+
+            if not self.valid_email(email):
+                valid = False
+                retry_params["email_error"] = "Email is invalid"
+            
+            # if any params invalid, reload signup page w/ previous values
+            if not valid:
                 self.render("signup.html", **retry_params)
-                print(User.username_in_use(username))
-                return
+
+            else:
+
+                # check if username used, reload signup page
+                if User.username_in_use(username):
+                    retry_params["username_error"] = "Username in use"
+                    self.render("signup.html", **retry_params)
+                    print(User.username_in_use(username))
+                    return
 
 
-            user = User.register(username, 
-                                 first_name, 
-                                 last_name, 
-                                 password, 
-                                 email)
+                user = User.register(username, 
+                                     first_name, 
+                                     last_name, 
+                                     password, 
+                                     email)
 
-            avatar_image = self.request.get("img")
-            if avatar_image:
-                avatar_image = images.resize(avatar_image, 150, 150)
-                user.avatar_image = avatar_image
+                avatar_image = self.request.get("img")
+                if avatar_image:
+                    avatar_image = images.resize(avatar_image, 150, 150)
+                    user.avatar_image = avatar_image
 
-            user.put()
+                user.put()
 
-            self.set_cookie(USER_COOKIE_KEY, str(user.key().id()))
-            self.redirect("/")
+                self.set_cookie(USER_COOKIE_KEY, str(user.key().id()))
+                self.redirect("/")
 
 """
 Handler for rendering user avatar images stored as BlobProperty values

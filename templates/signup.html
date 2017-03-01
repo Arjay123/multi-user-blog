@@ -3,72 +3,104 @@
 
 {% block content %}
 
-<ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#login" aria-controls="login" role="tab" data-toggle="tab">Login</a></li>
-    <li role="presentation"><a href="#signup" aria-controls="signup" role="tab" data-toggle="tab">Signup</a></li>
-</ul>
+<div class="row">
+	<div class="col-xs-10 col-xs-offset-1">
+		<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation" {% if not signup %} class="active" {% endif %}><a href="#login" aria-controls="login" role="tab" data-toggle="tab">Login</a></li>
+			<li role="presentation" {% if signup %} class="active" {% endif %}><a href="#signup" aria-controls="signup" role="tab" data-toggle="tab">Signup</a></li>
+		</ul>
 
-<!-- Tab panes -->
-  <div class="tab-content">
-    <div role="tabpanel" class="tab-pane active" id="login">...</div>
-    <div role="tabpanel" class="tab-pane" id="signup">
-    	<div class="row">
-			<div class="col-xs-10 col-xs-offset-1 text-center">
-				<h2>New User Signup</h2>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-xs-10 col-xs-offset-1">
-				<form method="post" enctype="multipart/form-data">
-					<div class="form-group">
-					    <label for="username">Username</label>
-					    <input type="text" class="form-control" name="username" id="username" placeholder="Username" value="{{username}}">
-					    <div class="error">{{username_error}}</div>
-				  	</div>
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane {% if not signup %} active {% endif %}" id="login">
 
-				  	<div class="form-group">
-				  		<label for="first_name">First Name</label>
-				  		<input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name">
-				  		<div class="error">{{first_name_error}}</div>
-				  	</div>
-
-					<div class="form-group">
-				  		<label for="last_name">Last Name</label>
-				  		<input type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name">
-				  		<div class="error">{{last_name_error}}</div>
-				  	</div>
-
-				  	<div class="form-group">
-				  		<label for="password">Password</label>
-				  		<input type="password" class="form-control" name="password" id="password">
-				  		<div class="error">{{password_error}}</div>
-				  	</div>
-
-				  	<div class="form-group">
-				  		<label for="confirm_pw">Confirm Password</label>
-				  		<input type="password" class="form-control" name="confirm_pw" id="confirm_pw">
-				  		<div class="error">{{confirm_pw_error}}</div>
-				  	</div>
-
-				  	<div class="form-group">
-				  		<label for="email">Email (optional)</label>
-				  		<input type="text" class="form-control" name="email" id="email" placeholder="email@domain.com">
-				  		<div class="error">{{email_error}}</div>
-				  	</div>
-
-				  	<div class="form-group">
-					  	<label for="img">Avatar Image (optional)</label>
-					 	<input type="file" name="img"/>
+				<div class="row">
+					<div class="col-xs-10 col-xs-offset-1 text-center">
+						<h2>Login</h2>
 					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-10 col-xs-offset-1">
+						<form method="post" enctype="multipart/form-data">
+							<div class="form-group">
+								<label for="username">Username</label>
+								<input type="text" class="form-control" name="username" id="username" placeholder="Username" value="{{login_username}}">
+								<div class="error">{{login_username_error}}</div>
+							</div>
 
-				  	<button type="submit" class="btn btn-default">Submit</button>
-				</form>
+							<div class="form-group">
+								<label for="password">Password</label>
+								<input type="password" class="form-control" name="password" id="password">
+								<div class="error">{{login_password_error}}</div>
+							</div>
+
+							<button type="submit" name="frm_submit" value="login" class="btn btn-default">Submit</button>
+						</form>
+					</div>
+				</div>
+			</div>
+
+
+			<div role="tabpanel" class="tab-pane {% if signup %} active {% endif %}" id="signup">
+
+				<div class="row">
+					<div class="col-xs-10 col-xs-offset-1 text-center">
+						<h2>Signup</h2>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-10 col-xs-offset-1">
+						<form method="post" enctype="multipart/form-data">
+							<div class="form-group">
+								<label for="username">Username</label>
+								<input type="text" class="form-control" name="username" id="username" placeholder="Username" value="{{username}}">
+								<div class="error">{{username_error}}</div>
+							</div>
+
+							<div class="form-group">
+								<label for="first_name">First Name</label>
+								<input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name" value="{{first_name}}">
+								<div class="error">{{first_name_error}}</div>
+							</div>
+
+							<div class="form-group">
+								<label for="last_name">Last Name</label>
+								<input type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name" value="{{last_name}}">
+								<div class="error">{{last_name_error}}</div>
+							</div>
+
+							<div class="form-group">
+								<label for="password">Password</label>
+								<input type="password" class="form-control" name="password" id="password">
+								<div class="error">{{password_error}}</div>
+							</div>
+
+							<div class="form-group">
+								<label for="confirm_pw">Confirm Password</label>
+								<input type="password" class="form-control" name="confirm_pw" id="confirm_pw">
+								<div class="error">{{confirm_pw_error}}</div>
+							</div>
+
+							<div class="form-group">
+								<label for="email">Email (optional)</label>
+								<input type="text" class="form-control" name="email" id="email" placeholder="email@domain.com">
+								<div class="error">{{email_error}}</div>
+							</div>
+
+							<div class="form-group">
+								<label for="img">Avatar Image (optional)</label>
+								<input type="file" name="img"/>
+							</div>
+
+							<button type="submit" name="frm_submit" value="signup" class="btn btn-default">Submit</button>
+						</form>
+					</div>
+				</div>
 			</div>
 		</div>
-    </div>
-    <div role="tabpanel" class="tab-pane" id="messages">...</div>
-    <div role="tabpanel" class="tab-pane" id="settings">...</div>
-  </div>
+	</div>
+</div>
+
 
 
 
