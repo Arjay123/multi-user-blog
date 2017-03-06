@@ -271,7 +271,8 @@ class PostImageHandler(Handler):
         img_id = self.request.get("img_id")
         if img_id and img_id.isdigit():
 
-            post = Post.get_by_id(int(img_id))
+            key = db.Key.from_path('Post', int(img_id))
+            post = db.get(key)
             
             if post and post.header_image:
                 self.response.headers["Content-Type"] = "image/jpeg"
@@ -285,6 +286,18 @@ class MainPage(Handler):
         posts = Post.all().order('-created')
         self.render("blog.html", posts=posts)
 
+"""
+Single post page handler
+"""
+class PostPage(Handler):
+    def get(self, post_id):
+        if post_id and post_id.isdigit():
+            key = db.Key.from_path('Post', int(post_id))
+            post = db.get(key)
+            if post:
+                self.render("post.html", post=post)
+            else:
+                self.redirect("/")
 
 """
 Handler for new post submissions
@@ -301,7 +314,10 @@ class NewPostPage(Handler):
         header_image = self.request.get("img")
         header_image = images.resize(header_image, 500, 200)
 
-        post = Post(title=title, content=content)
+        post = Post(title=title, 
+                    content=content, 
+                    author_id=str(self.user.key().id()))
+
         post.header_image = header_image
         post.put()
 
@@ -313,4 +329,5 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/userimg', UserImageHandler),
                                ('/signup', SignupPage),
                                ('/user', UserPage),
-                               ('/logout', LogoutPage)])
+                               ('/logout', LogoutPage),
+                               ('/post/([0-9]+)', PostPage)])
