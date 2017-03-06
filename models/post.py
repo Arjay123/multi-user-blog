@@ -3,8 +3,9 @@ from google.appengine.ext import db
 class Post(db.Model):
     title = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
-    header_image = db.StringProperty()
+    header_image_thumb = db.StringProperty()
     header_image_small = db.StringProperty()
+    header_image_med = db.StringProperty()
     header_image_large = db.StringProperty()
     created = db.DateTimeProperty(auto_now_add=True)
     author_id = db.StringProperty(required=True)

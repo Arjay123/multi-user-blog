@@ -330,16 +330,26 @@ class NewPostPage(Handler):
         content = self.request.get("content")
 
         header_image_original = self.request.get("img")
-        header_image = images.resize(header_image_original, 500)
+        header_image = images.resize(header_image_original, height=200)
 
-        header_image_small = images.resize(header_image_original, 250)
-        header_image_large = images.resize(header_image_original, 1000)
+        header_image_small = images.resize(header_image_original, width=500, height=200, crop_to_fit=True)
+        header_image_med = images.resize(header_image_original, width=750, height=300, crop_to_fit=True)
+        header_image_large = images.resize(header_image_original, width=1000, height=400, crop_to_fit=True)
+
+
+        #header_image_mobile
+        #header_image_tablets
+        #header_image_laptops
+        #header_image_desktops
 
         post_photo = PostPhoto(image=header_image)
         post_photo.put()
 
         post_photo_small = PostPhoto(image=header_image_small)
         post_photo_small.put()
+
+        post_photo_med = PostPhoto(image=header_image_med)
+        post_photo_med.put()
 
         post_photo_large = PostPhoto(image=header_image_large)
         post_photo_large.put()
@@ -348,8 +358,9 @@ class NewPostPage(Handler):
                     content=content, 
                     author_id=str(self.user.key().id()))
 
-        post.header_image = str(post_photo.key().id())
+        post.header_image_thumb = str(post_photo.key().id())
         post.header_image_small = str(post_photo_small.key().id())
+        post.header_image_med = str(post_photo_med.key().id())
         post.header_image_large = str(post_photo_large.key().id())
         post.put()
 
