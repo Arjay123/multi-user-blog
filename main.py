@@ -97,8 +97,14 @@ class Handler(webapp2.RequestHandler):
     def login(self, uid):
         self.set_cookie(USER_COOKIE_KEY, uid)
 
+
     def logout(self):
         self.set_cookie(USER_COOKIE_KEY, "")
+        self.user = None
+
+
+    def is_logged_in(self):
+        return self.user
 
 
 """
@@ -141,7 +147,7 @@ class SignupPage(UserSettingsHandler):
     def get(self):
 
         # this page is not accessible by a logged in user
-        if self.user:
+        if self.is_logged_in():
             self.redirect("/")
             return
 
@@ -303,7 +309,12 @@ class PostPage(Handler):
 Handler for new post submissions
 """
 class NewPostPage(Handler):
+
     def get(self):
+        if not self.is_logged_in():
+            self.redirect("/signup")
+            return
+
         self.render("newpost.html")
 
 
