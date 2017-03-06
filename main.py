@@ -10,7 +10,10 @@ from models.user import User
 from models.post import Post
 from string import letters
 from google.appengine.ext import db
+from google.appengine.ext import blobstore
 from google.appengine.api import images
+
+from google.appengine.ext.webapp import blobstore_handlers
 
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -277,12 +280,12 @@ class PostImageHandler(Handler):
         img_id = self.request.get("img_id")
         if img_id and img_id.isdigit():
 
-            key = db.Key.from_path('Post', int(img_id))
-            post = db.get(key)
+            key = db.Key.from_path('PostPhoto', int(img_id))
+            photo = db.get(key)
             
-            if post and post.header_image:
+            if photo and photo.image:
                 self.response.headers["Content-Type"] = "image/jpeg"
-                self.response.out.write(post.header_image)
+                self.response.out.write(photo.image)
 
 """
 Home page handler
@@ -305,6 +308,10 @@ class PostPage(Handler):
             else:
                 self.redirect("/")
 
+
+class PostPhoto(db.Model):
+    image = db.BlobProperty(required=True)
+
 """
 Handler for new post submissions
 """
@@ -322,15 +329,32 @@ class NewPostPage(Handler):
         title = self.request.get("title")
         content = self.request.get("content")
 
-        header_image = self.request.get("img")
-        header_image = images.resize(header_image, 500, 200)
+        header_image_original = self.request.get("img")
+        header_image = images.resize(header_image_original, 500)
+
+        header_image_small = images.resize(header_image_original, 250)
+        header_image_large = images.resize(header_image_original, 1000)
+
+        post_photo = PostPhoto(image=header_image)
+        post_photo.put()
+
+        post_photo_small = PostPhoto(image=header_image_small)
+        post_photo_small.put()
+
+        post_photo_large = PostPhoto(image=header_image_large)
+        post_photo_large.put()
 
         post = Post(title=title, 
                     content=content, 
                     author_id=str(self.user.key().id()))
 
-        post.header_image = header_image
+        post.header_image = str(post_photo.key().id())
+        post.header_image_small = str(post_photo_small.key().id())
+        post.header_image_large = str(post_photo_large.key().id())
         post.put()
+
+        
+
 
 
 
