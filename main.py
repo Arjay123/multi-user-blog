@@ -8,6 +8,7 @@ import hashlib
 
 from models.user import User
 from models.post import Post
+from models.postphoto import PostPhoto
 from string import letters
 from google.appengine.ext import db
 from google.appengine.ext import blobstore
@@ -308,10 +309,6 @@ class PostPage(Handler):
             else:
                 self.redirect("/")
 
-
-class PostPhoto(db.Model):
-    image = db.BlobProperty(required=True)
-
 """
 Handler for new post submissions
 """
@@ -326,24 +323,45 @@ class NewPostPage(Handler):
 
 
     def post(self):
+
         title = self.request.get("title")
         content = self.request.get("content")
-
         header_image_original = self.request.get("img")
-        header_image = images.resize(header_image_original, height=200)
 
-        header_image_small = images.resize(header_image_original, width=500, height=200, crop_to_fit=True)
-        header_image_med = images.resize(header_image_original, width=750, height=300, crop_to_fit=True)
-        header_image_large = images.resize(header_image_original, width=1000, height=400, crop_to_fit=True)
+        params = {
+            "title": title,
+            "content": content,
+            "header_image_original": header_image_original
+        }
 
+        if not (title or content or header_image_original):
+            self.render("newpost.html", **params)
+            return
 
-        #header_image_mobile
-        #header_image_tablets
-        #header_image_laptops
-        #header_image_desktops
+        """
+        create different image sizes from original, put in datastore, 
+        store id of each in post object
+        """
+        header_image_thumb = images.resize(header_image_original, 
+                                           height=200)
 
-        post_photo = PostPhoto(image=header_image)
-        post_photo.put()
+        header_image_small = images.resize(header_image_original, 
+                                           width=500, 
+                                           height=200, 
+                                           crop_to_fit=True)
+
+        header_image_med = images.resize(header_image_original, 
+                                         width=750, 
+                                         height=300, 
+                                         crop_to_fit=True)
+
+        header_image_large = images.resize(header_image_original, 
+                                           width=1000, 
+                                           height=400, 
+                                           crop_to_fit=True)
+
+        post_photo_thumb = PostPhoto(image=header_image_thumb)
+        post_photo_thumb.put()
 
         post_photo_small = PostPhoto(image=header_image_small)
         post_photo_small.put()
@@ -354,19 +372,19 @@ class NewPostPage(Handler):
         post_photo_large = PostPhoto(image=header_image_large)
         post_photo_large.put()
 
+        # create post object
         post = Post(title=title, 
                     content=content, 
                     author_id=str(self.user.key().id()))
 
-        post.header_image_thumb = str(post_photo.key().id())
+        post.header_image_thumb = str(post_photo_thumb.key().id())
         post.header_image_small = str(post_photo_small.key().id())
         post.header_image_med = str(post_photo_med.key().id())
         post.header_image_large = str(post_photo_large.key().id())
+
         post.put()
 
         
-
-
 
 
 app = webapp2.WSGIApplication([('/', MainPage),
