@@ -5,6 +5,7 @@ import re
 import hmac
 import random
 import hashlib
+import time
 
 from models.user import User
 from models.post import Post
@@ -139,16 +140,108 @@ class UserPostsPage(Handler):
         self.render("post_list.html", posts=posts.fetch(limit=None))
 
 
-    def post(self):
-        if self.request.get("submit") == "delete":
-            post_id = self.request.get("id")
+"""
+Edit post handler
+"""
+class EditPostPage(Handler):
+    def get(self, post_id):
+        if post_id:
+            post = Post.get_by_id(int(post_id))
+            self.render("editpost.html", post=post)
 
-            if post_id:
-                post = Post.get_by_id(int(post_id))
-                if post:
-                    post.delete()
-        else:
-            pass
+
+    def post(self, post_id):
+        if post_id:
+            post = Post.get_by_id(int(post_id))
+
+            new_title = self.request.get("title")
+            new_content = self.request.get("content")
+            new_header_image = self.request.get("img")
+            submit = False
+
+            if new_title:
+                submit=True
+                post.title = new_title
+
+
+            if new_content:
+                submit=True
+                post.content = new_content
+
+            if new_header_image:
+                submit=True
+                
+                # delete images
+
+
+                # insert new images
+                header_image_thumb = images.resize(new_header_image, 
+                                           height=200)
+
+                header_image_small = images.resize(new_header_image, 
+                                                   width=500, 
+                                                   height=200, 
+                                                   crop_to_fit=True)
+
+                header_image_med = images.resize(new_header_image, 
+                                                 width=750, 
+                                                 height=300, 
+                                                 crop_to_fit=True)
+
+                header_image_large = images.resize(new_header_image, 
+                                                   width=1000, 
+                                                   height=400, 
+                                                   crop_to_fit=True)
+
+                post_photo_thumb = PostPhoto(image=header_image_thumb)
+                post_photo_thumb.put()
+
+                post_photo_small = PostPhoto(image=header_image_small)
+                post_photo_small.put()
+
+                post_photo_med = PostPhoto(image=header_image_med)
+                post_photo_med.put()
+
+                post_photo_large = PostPhoto(image=header_image_large)
+                post_photo_large.put()
+
+                post.header_image_thumb = str(post_photo_thumb.key().id())
+                post.header_image_small = str(post_photo_small.key().id())
+                post.header_image_med = str(post_photo_med.key().id())
+                post.header_image_large = str(post_photo_large.key().id())
+
+            if submit:
+                post.put()
+            self.render("editpost.html", post=post)
+
+
+
+
+"""
+Delete post handler
+"""
+class DeletePostHandler(Handler):
+    def post(self):
+        post_id = self.request.get("id")
+
+        if post_id:
+            post = Post.get_by_id(int(post_id))
+
+            # only user who created post can delete it
+            if post:
+                if not(self.user and post.author_id == str(self.user.key().id())):
+                    self.redirect('/signup')
+                    return
+
+                post.delete()
+ 
+                # this feels hacky, but it prevents the post list from loading
+                # before the post is deleted
+                time.sleep(2)
+
+        self.redirect("/postlist")
+
+
 
 """
 Settings page, user can change some of their information from here
@@ -415,4 +508,6 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/user', UserPage),
                                ('/logout', LogoutPage),
                                ('/post/([0-9]+)', PostPage),
-                               ('/postlist', UserPostsPage)])
+                               ('/postlist', UserPostsPage),
+                               ('/delete', DeletePostHandler),
+                               ('/edit/([0-9]+)', EditPostPage)])

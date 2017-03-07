@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from "formmacros.html" import post_form %}
+
+{% block content %}
+
+<div class="row">
+	<div class="col-xs-10 col-xs-offset-1 ">
+		<div class="col-xs-12 post-full">
+			<div class="row post-summary-header">
+				<picture class="col-xs-12">
+					<source media="(min-width: 768px)" srcset="/postimg?img_id={{post.header_image_med}} 1x, /postimg?img_id={{post.header_image_large}} 2x">
+					<source media="(min-width: 375px)" srcset="/postimg?img_id={{post.header_image_small}} 1x, /postimg?img_id={{post.header_image_med}} 2x">
+					<img class="center-block post-image img-responsive" src="/postimg?img_id={{post.header_image_thumb}}">
+				</picture>
+				<div class="col-xs-12 post-summary-title"><h3>{{post.title}}</h3></div>
+				<div class="col-xs-12"><h6>{{post.get_author_name()}}</h6></div>
+			</div>
+			<div class="row post-summary-content">
+				<div class="col-xs-12 post-summary-content"><p>{{post.content}}</p></div>
+			</div>
+			<div class="row row-eq-height post-summary-footer">
+				<div class="col-xs-6 post-summary-date pull-center"><h5><small>{{post.created.date().strftime("%b %d, %Y")}}</small></h5></div>
+			</div>
+		</div>
+	</div>
+</div>
+<hr>
+<div class="row">
+	<div class="col-xs-10 col-xs-offset-1">
+		<h2>Edit post</h2>
+		{{ post_form(post.title, post.content)}}
+	</div>
+</div>
+
+
+{% endblock %}

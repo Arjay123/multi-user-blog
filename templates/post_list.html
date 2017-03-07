@@ -19,7 +19,9 @@
 				<td>{{post.title}}</td>
 				<td>{{post.created.date().strftime("%b %d, %Y")}}</td>
 				<td>
-					<button class="btn btn-default">Edit</button>
+					<form action="/edit/{{post.key().id()}}" class="edit-btn-frm">
+						<button class="btn btn-default" type="submit">Edit</button>
+					</form>
 					<button class="btn btn-danger" data-toggle="modal" data-target="#confirmModal" data-id="{{post.key().id()}}" data-post-title="{{post.title}}">Delete</button>
 				</td>
 			</tr>
@@ -36,7 +38,7 @@
     <div class="modal-content">
       <div class="modal-body">
       	<h3 class="modal-post-title"></h3>
-        <form method="post">
+        <form action="/delete" method="post">
           <input class="modal-post-id" name="id" hidden type="text">
           <button class="btn btn-danger" name="submit" value="delete" type="submit">Delete</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

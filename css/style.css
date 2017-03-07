@@ -18,6 +18,10 @@ body{
 	margin-bottom: 60px;
 }
 
+.edit-btn-frm {
+	display: inline;
+}
+
 .row-eq-height {
   display: -webkit-box;
   display: -webkit-flex;
