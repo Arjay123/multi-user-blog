@@ -138,6 +138,18 @@ class UserPostsPage(Handler):
             str(self.user.key().id()))
         self.render("post_list.html", posts=posts.fetch(limit=None))
 
+
+    def post(self):
+        if self.request.get("submit") == "delete":
+            post_id = self.request.get("id")
+
+            if post_id:
+                post = Post.get_by_id(int(post_id))
+                if post:
+                    post.delete()
+        else:
+            pass
+
 """
 Settings page, user can change some of their information from here
 """
@@ -290,8 +302,7 @@ class PostImageHandler(Handler):
         img_id = self.request.get("img_id")
         if img_id and img_id.isdigit():
 
-            key = db.Key.from_path('PostPhoto', int(img_id))
-            photo = db.get(key)
+            photo = PostPhoto.get_by_id(int(img_id))
             
             if photo and photo.image:
                 self.response.headers["Content-Type"] = "image/jpeg"
