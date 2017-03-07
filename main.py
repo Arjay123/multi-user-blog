@@ -130,6 +130,15 @@ class UserSettingsHandler(Handler):
 
 
 """
+List of posts created by current user
+"""
+class UserPostsPage(Handler):
+    def get(self):
+        posts = Post.gql("WHERE author_id='%s' ORDER BY created DESC" % 
+            str(self.user.key().id()))
+        self.render("post_list.html", posts=posts.fetch(limit=None))
+
+"""
 Settings page, user can change some of their information from here
 """
 class UserPage(UserSettingsHandler):
@@ -394,4 +403,5 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/signup', SignupPage),
                                ('/user', UserPage),
                                ('/logout', LogoutPage),
-                               ('/post/([0-9]+)', PostPage)])
+                               ('/post/([0-9]+)', PostPage),
+                               ('/postlist', UserPostsPage)])

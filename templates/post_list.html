@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<div class="row">
+	<div class="col-xs-10 col-xs-offset-1">
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>Title</th>
+				<th>Created</th>
+				<th>Controls</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for post in posts %}
+			<tr>
+				<td>{{post.title}}</td>
+				<td>{{post.created.date().strftime("%b %d, %Y")}}</td>
+				<td>
+					<button class="btn btn-default">Edit</button>
+					<button class="btn btn-danger" data-toggle="modal" data-target="#confirmModal" data-id="{{post.key().id()}}" data-post-title="{{post.title}}">Delete</button>
+				</td>
+			</tr>
+			{% endfor %}	
+			
+		</tbody>
+	</table>
+	</div>
+</div>
+
+<!-- Modal confirmation popup when user clicks delete -->
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+      	<h3 class="modal-post-title"></h3>
+        <form method="post">
+          <input class="modal-post-id" hidden type="text">
+          <button class="btn btn-danger" type="submit">Delete</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+	//Set values of modal form from button that triggered the modal
+	$('#confirmModal').on('show.bs.modal', function (event) {
+	  var button = $(event.relatedTarget) // Button that triggered the modal
+	  var id = button.data('id') // Extract info from data-* attributes
+	  var title = button.data('post-title')
+
+	  var modal = $(this)
+	  modal.find('.modal-post-title').text('Confirm deletion of "' + title + '"')
+	  modal.find('.modal-post-id').val(id)
+	})
+
+</script>
+
+{% endblock %}
