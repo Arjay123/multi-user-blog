@@ -1,4 +1,6 @@
 from google.appengine.ext import db
+from google.appengine.api import images
+
 from postphoto import PostPhoto
 
 class Post(db.Model):
@@ -10,6 +12,56 @@ class Post(db.Model):
     header_image_large = db.StringProperty()
     created = db.DateTimeProperty(auto_now_add=True)
     author_id = db.StringProperty(required=True)
+
+
+    """
+    create different image sizes from original, put in datastore, 
+    store id of each in post object
+    """
+    def change_header_image(self, new_header_image):
+        # delete current images from datastore
+        for photo_id in [self.header_image_thumb, 
+                      self.header_image_small,
+                      self.header_image_med,
+                      self.header_image_large]:
+            if photo_id:
+                PostPhoto.delete_by_id(photo_id)
+
+        # insert new images
+        header_image_thumb = images.resize(new_header_image, 
+                                   height=200)
+
+        header_image_small = images.resize(new_header_image, 
+                                           width=500, 
+                                           height=200, 
+                                           crop_to_fit=True)
+
+        header_image_med = images.resize(new_header_image, 
+                                         width=750, 
+                                         height=300, 
+                                         crop_to_fit=True)
+
+        header_image_large = images.resize(new_header_image, 
+                                           width=1000, 
+                                           height=400, 
+                                           crop_to_fit=True)
+
+        post_photo_thumb = PostPhoto(image=header_image_thumb)
+        post_photo_thumb.put()
+
+        post_photo_small = PostPhoto(image=header_image_small)
+        post_photo_small.put()
+
+        post_photo_med = PostPhoto(image=header_image_med)
+        post_photo_med.put()
+
+        post_photo_large = PostPhoto(image=header_image_large)
+        post_photo_large.put()
+
+        self.header_image_thumb = str(post_photo_thumb.key().id())
+        self.header_image_small = str(post_photo_small.key().id())
+        self.header_image_med = str(post_photo_med.key().id())
+        self.header_image_large = str(post_photo_large.key().id())
 
 
 
@@ -27,8 +79,6 @@ class Post(db.Model):
                       self.header_image_small,
                       self.header_image_med,
                       self.header_image_large]:
-            photo = PostPhoto.get_by_id(int(photo_id))
-            if photo:
-                photo.delete()
+            PostPhoto.delete_by_id(photo_id)
 
         super(Post, self).delete()

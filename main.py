@@ -170,45 +170,7 @@ class EditPostPage(Handler):
 
             if new_header_image:
                 submit=True
-                
-                # delete images
-
-
-                # insert new images
-                header_image_thumb = images.resize(new_header_image, 
-                                           height=200)
-
-                header_image_small = images.resize(new_header_image, 
-                                                   width=500, 
-                                                   height=200, 
-                                                   crop_to_fit=True)
-
-                header_image_med = images.resize(new_header_image, 
-                                                 width=750, 
-                                                 height=300, 
-                                                 crop_to_fit=True)
-
-                header_image_large = images.resize(new_header_image, 
-                                                   width=1000, 
-                                                   height=400, 
-                                                   crop_to_fit=True)
-
-                post_photo_thumb = PostPhoto(image=header_image_thumb)
-                post_photo_thumb.put()
-
-                post_photo_small = PostPhoto(image=header_image_small)
-                post_photo_small.put()
-
-                post_photo_med = PostPhoto(image=header_image_med)
-                post_photo_med.put()
-
-                post_photo_large = PostPhoto(image=header_image_large)
-                post_photo_large.put()
-
-                post.header_image_thumb = str(post_photo_thumb.key().id())
-                post.header_image_small = str(post_photo_small.key().id())
-                post.header_image_med = str(post_photo_med.key().id())
-                post.header_image_large = str(post_photo_large.key().id())
+                post.change_header_image(new_header_image)
 
             if submit:
                 post.put()
@@ -451,49 +413,13 @@ class NewPostPage(Handler):
             self.render("newpost.html", **params)
             return
 
-        """
-        create different image sizes from original, put in datastore, 
-        store id of each in post object
-        """
-        header_image_thumb = images.resize(header_image_original, 
-                                           height=200)
-
-        header_image_small = images.resize(header_image_original, 
-                                           width=500, 
-                                           height=200, 
-                                           crop_to_fit=True)
-
-        header_image_med = images.resize(header_image_original, 
-                                         width=750, 
-                                         height=300, 
-                                         crop_to_fit=True)
-
-        header_image_large = images.resize(header_image_original, 
-                                           width=1000, 
-                                           height=400, 
-                                           crop_to_fit=True)
-
-        post_photo_thumb = PostPhoto(image=header_image_thumb)
-        post_photo_thumb.put()
-
-        post_photo_small = PostPhoto(image=header_image_small)
-        post_photo_small.put()
-
-        post_photo_med = PostPhoto(image=header_image_med)
-        post_photo_med.put()
-
-        post_photo_large = PostPhoto(image=header_image_large)
-        post_photo_large.put()
-
+        
         # create post object
         post = Post(title=title, 
                     content=content, 
                     author_id=str(self.user.key().id()))
 
-        post.header_image_thumb = str(post_photo_thumb.key().id())
-        post.header_image_small = str(post_photo_small.key().id())
-        post.header_image_med = str(post_photo_med.key().id())
-        post.header_image_large = str(post_photo_large.key().id())
+        post.change_header_image(header_image_original)
 
         post.put()
 
