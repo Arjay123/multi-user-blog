@@ -10,6 +10,7 @@ class Post(db.Model):
     header_image_small = db.StringProperty()
     header_image_med = db.StringProperty()
     header_image_large = db.StringProperty()
+    snippet = db.TextProperty()
     created = db.DateTimeProperty(auto_now_add=True)
     author_id = db.StringProperty(required=True)
 
@@ -63,6 +64,14 @@ class Post(db.Model):
         self.header_image_med = str(post_photo_med.key().id())
         self.header_image_large = str(post_photo_large.key().id())
 
+    def get_formatted_text(self):
+        if self.content:
+            return self.content.replace('\n', '<br>')
+
+
+    def create_snippet(self):
+        if self.content:
+            self.snippet = self.content.split('\n')[0]
 
 
     def get_author_name(self):

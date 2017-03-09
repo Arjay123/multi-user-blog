@@ -435,7 +435,7 @@ class AuthorPage(Handler):
             self.redirect("/")
 
         author = User.get_by_id(int(author_id))
-        posts = Post.gql("WHERE author_id='%s'" % str(author.key().id()))
+        posts = Post.gql("WHERE author_id='%s' ORDER BY created DESC" % str(author.key().id()))
         self.render("author.html", author=author, posts=posts)
 
 """
@@ -474,6 +474,7 @@ class NewPostPage(Handler):
                     author_id=str(self.user.key().id()))
 
         post.change_header_image(header_image_original)
+        post.create_snippet()
 
         post.put()
 
