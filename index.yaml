@@ -15,3 +15,8 @@ indexes:
   - name: author_id
   - name: created
     direction: desc
+
+- kind: User
+  properties:
+  - name: first_name
+  - name: last_name

@@ -212,6 +212,39 @@ class UserPage(UserSettingsHandler):
     def get(self):
         self.render("user.html")
 
+    def post(self):
+        first_name = self.request.get("first_name")
+        last_name = self.request.get("last_name")
+        password = self.request.get("password")
+        confirm_pw = self.request.get("confirm_pw")
+        email = self.request.get("email")
+        img = self.request.get("img")
+        bio = self.request.get("bio")
+
+
+
+        if first_name:
+            self.user.first_name = first_name
+
+        if last_name:
+            self.user.last_name = last_name
+
+        if password and valid_password(password):
+            pass
+
+        if email:
+            self.user.email = email
+
+        if img:
+            pass
+
+        if bio:
+            self.user.bio = bio
+
+        self.user.put()
+        self.render("user.html")
+
+
 '''
 Logout page
 '''
@@ -327,13 +360,13 @@ class SignupPage(UserSettingsHandler):
 
                 avatar_image = self.request.get("img")
                 if avatar_image:
-                    avatar_image = images.resize(avatar_image, 150, 150)
+                    avatar_image = images.resize(avatar_image, 150, 150, crop_to_fit=True)
                     user.avatar_image = avatar_image
 
                 user.put()
 
                 self.set_cookie(USER_COOKIE_KEY, str(user.key().id()))
-                self.redirect("/")
+                self.redirect("/user")
 
 """
 Handler for rendering user avatar images stored as BlobProperty values
@@ -383,6 +416,27 @@ class PostPage(Handler):
                 self.render("post.html", post=post)
             else:
                 self.redirect("/")
+
+"""
+Authors page
+"""
+class AuthorsPage(Handler):
+    def get(self):
+        authors = User.gql("ORDER BY first_name, last_name")
+        self.render("authors.html", authors=authors)
+
+
+"""
+Author Page
+"""
+class AuthorPage(Handler):
+    def get(self, author_id):
+        if not author_id:
+            self.redirect("/")
+
+        author = User.get_by_id(int(author_id))
+        posts = Post.gql("WHERE author_id='%s'" % str(author.key().id()))
+        self.render("author.html", author=author, posts=posts)
 
 """
 Handler for new post submissions
@@ -436,4 +490,6 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/post/([0-9]+)', PostPage),
                                ('/postlist', UserPostsPage),
                                ('/delete', DeletePostHandler),
-                               ('/edit/([0-9]+)', EditPostPage)])
+                               ('/edit/([0-9]+)', EditPostPage),
+                               ('/authors', AuthorsPage),
+                               ('/author/([0-9]+)', AuthorPage)])

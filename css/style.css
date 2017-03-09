@@ -65,6 +65,14 @@ body{
 	
 }
 
+.author-header {
+	padding-bottom: 25px;
+}
+
+.author-bio {
+	margin: auto 0;
+}
+
 .nav-link {
 	background-color: #272727;
 	color: #EFF1F3;

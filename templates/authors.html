@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="row author-header">
+	<div class="col-xs-12 text-center">
+	<h1>Our Authors</h1>
+	</div>
+</div>
+<div class="row authors">
+	{% for author in authors %}
+	<div class="author col-xs-12 col-sm-6 col-md-4">
+		<div class="row author-summary text-center">
+			<div class="col-xs-12">
+				<a href="/author/{{author.key().id()}}">
+					<img class="img-responsive center-block img-circle" src="/userimg?img_id={{author.key().id()}}">
+					<h3>{{author.first_name + " " + author.last_name}}</h3>
+				</a>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+</div>
+
+{% endblock %}

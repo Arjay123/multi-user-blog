@@ -23,6 +23,7 @@ class User(db.Model):
     pw_hash = db.StringProperty(required=True)
     email = db.StringProperty()
     avatar_image = db.BlobProperty()
+    bio = db.TextProperty()
 
 
     @classmethod 
