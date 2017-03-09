@@ -4,7 +4,7 @@
 {% block content %}
 
 
-<div class="row grid posts">
+<div class="row posts">
 
 	{% for post in posts %}
 		{{post_thumb(post)}}
@@ -12,13 +12,11 @@
 
 </div>
 
-
-
 {% endblock %}
 
 
 {% block scripts %}
 
+	{{masonry()}}
 
-{{masonry()}}
 {% endblock scripts %}

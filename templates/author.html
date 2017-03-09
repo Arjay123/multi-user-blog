@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% from "macros.html" import post_thumb %}
+{% from "macros.html" import post_thumb, masonry %}
 {% block content %}
 <div class="row author-header">
 	<div class="col-xs-12 text-center">
@@ -29,10 +29,16 @@
 	</div>
 
 </div>
-<div class="row author-posts">
+<div class="row posts">
 	{% for post in posts %}
 		{{post_thumb(post)}}
 	{% endfor %}
 </div>
 
 {% endblock %}
+
+{% block scripts %}
+
+
+{{masonry()}}
+{% endblock scripts %}
