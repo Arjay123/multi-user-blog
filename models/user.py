@@ -1,8 +1,13 @@
 import random
 import hashlib
+from urllib import urlopen
+
+
+
 
 from string import letters
 from google.appengine.ext import db
+from google.appengine.api import images
 
 
 ##### user stuff
@@ -26,6 +31,19 @@ class User(db.Model):
     bio = db.TextProperty()
 
 
+    @classmethod
+    def create_sample_users(cls):
+        pw = make_pw_hash("User1", "pass")
+        user = User.register("User1", "John", "Smith", pw, "John@email.com")
+
+        url = 'http://e0.365dm.com/13/09/800x600/Chelsea-v-Basel-Frank-Lampard_3005627.jpg?20131107160649'
+        response = urlopen(url)
+        img = response.read()
+        avatar_image = images.resize(img, 150, 150, crop_to_fit=True)
+
+        user.avatar_image = avatar_image
+        user.put()
+
     @classmethod 
     def username_in_use(cls, username):
         return User.gql("WHERE username = '%s'" % username).get()
@@ -40,8 +58,7 @@ class User(db.Model):
                     first_name=first_name,
                     last_name=last_name,
                     pw_hash = pw_hash,
-                    email = email,
-                    avatar_image=avatar_image)
+                    email = email)
 
 
     def valid_pw(self, username, pw):

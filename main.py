@@ -479,7 +479,9 @@ class NewPostPage(Handler):
         post.put()
 
         
-
+class InitHandler(Handler):
+    def get(self):
+        User.create_sample_users()
 
 app = webapp2.WSGIApplication([('/', MainPage),
                                ('/newpost', NewPostPage),
@@ -493,4 +495,5 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/delete', DeletePostHandler),
                                ('/edit/([0-9]+)', EditPostPage),
                                ('/authors', AuthorsPage),
-                               ('/author/([0-9]+)', AuthorPage)])
+                               ('/author/([0-9]+)', AuthorPage),
+                               ('/init', InitHandler)])
