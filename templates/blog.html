@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-{% from "macros.html" import post_thumb %}
+{% from "macros.html" import post_thumb, masonry %}
 {% block content %}
 
 
-<div class="row posts">
+<div class="row grid posts">
 
 	{% for post in posts %}
 		{{post_thumb(post)}}
@@ -15,3 +15,10 @@
 
 
 {% endblock %}
+
+
+{% block scripts %}
+
+
+{{masonry()}}
+{% endblock scripts %}

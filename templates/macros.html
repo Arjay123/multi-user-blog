@@ -18,23 +18,36 @@
 
 
 {% macro post_thumb(post) %}
-<div class="post col-xs-12 col-sm-6 col-md-4">
-	<div class="row row-eq-height">
-		<div class="col-xs-12 post-summary">
-			<div class="row post-summary-header">
-				<img class="col-xs-12 img-responsive post-image" src="/postimg?img_id={{post.header_image_thumb}}">
-				<div class="col-xs-12 post-summary-title"><h3>{{post.title}}</h3></div>
-				<div class="col-xs-12"><h6>{{post.get_author_name()}}</h6></div>
-			</div>
-			<div class="row post-summary-content">
-				<div class="col-xs-12 post-summary-content"><p>{{post.content}}</p></div>
-			</div>
-			<div class="row row-eq-height post-summary-footer">
-				<div class="col-xs-6 post-summary-date pull-center"><h5><small>{{post.created.date().strftime("%b %d, %Y")}}</small></h5></div>
-				<div class="col-xs-6 post-summary-link text-right pull-center"><a href="/post/{{post.key().id()}}">Read more...</a></div>
-			</div>
-		</div>
+<div class="post grid-item col-xs-12 col-sm-6 col-md-4">
+	<div class="row post-summary-header">
+		<img class="col-xs-12 img-responsive post-image" src="/postimg?img_id={{post.header_image_thumb}}">
+		<div class="col-xs-12 post-summary-title"><h3>{{post.title}}</h3></div>
+		<div class="col-xs-12"><h6>{{post.get_author_name()}}</h6></div>
+	</div>
+	<div class="row post-summary-content">
+		<div class="col-xs-12 post-summary-content"><p>{{post.content}}</p></div>
+	</div>
+	<div class="row row-eq-height post-summary-footer">
+		<div class="col-xs-6 post-summary-date pull-center"><h5><small>{{post.created.date().strftime("%b %d, %Y")}}</small></h5></div>
+		<div class="col-xs-6 post-summary-link text-right pull-center"><a href="/post/{{post.key().id()}}">Read more...</a></div>
 	</div>
 </div>
 {% endmacro %}
 
+{% macro masonry() %}
+
+<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+<script src="https://npmcdn.com/imagesloaded@4.1/imagesloaded.pkgd.min.js"></script>
+
+<script>
+
+var $grid = $('.grid').imagesLoaded(function() {
+  // init Masonry after all images have loaded
+  $grid.masonry({
+    itemSelector: '.post',
+    columnWidth: '.post'
+  });
+});
+</script>
+
+{% endmacro %}
