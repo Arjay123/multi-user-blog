@@ -6,7 +6,7 @@ import hmac
 import random
 import hashlib
 import time
-
+from urllib import urlopen
 from models.user import User
 from models.post import Post
 from models.postphoto import PostPhoto
@@ -481,7 +481,48 @@ class NewPostPage(Handler):
         
 class InitHandler(Handler):
     def get(self):
-        User.create_sample_users()
+
+        users_dicts = [
+            {
+               "username": "cwuser", 
+               "pw": "cw", 
+               "fname": "Clarence", 
+               "lname": "Wendle", 
+               "email": "ClarenceW@email.com", 
+               "bio": "Clarence is the main character of Clarence. Clarence's distinct perspective can transform any circumstance, however mundane, into the best day ever! His beliefs, outlook and experiences are all uniquely his own. Clarence leads with his heart, reacting to life with unfailing excitement and enthusiasm. He values his friends more than gold. In Pretty Great Day with a Girl, he is shown to be friends with everybody in Aberdale except Victor. Clarence loves everything because to Clarence, everything is amazing. He is most definitely the emotional third of this trio of friends. Despite all this, he's not very bright. It has been shown multiple times that his optimism also transforms him to a dimwit. In Average Jeff, it shown that he scored no only high crayon, he's the lowest, implying that his stupidity lead him up to this, however due to his habits and his describe stupidity.",
+               "url": "https://pbs.twimg.com/profile_images/554702195220697089/kb5fWogP.jpeg"
+            },
+            {
+               "username": "rsuser", 
+               "pw": "rs", 
+               "fname": "Ryan", 
+               "lname": "Sumouski", 
+               "email": "RyanS@email.com", 
+               "bio": "Ryan 'Sumo' Sumouski is one of the three main protagonists (More as a deuteragonist) in Clarence. He is one of Clarence's friends. He loves to do all sorts of crazy things so that he can enjoy having fun with Clarence, Jeff, and everyone else. Like his friends, he is socially awkward. He was originally voiced by Jason Marsden in the 'Pilot,' but was replaced by Tom Kenny in the series.",
+               "url": "http://vignette4.wikia.nocookie.net/clarence/images/d/d8/Bird_Boy_Man_57.png/revision/latest?cb=20160120051349"
+            },
+            {
+               "username": "jruser", 
+               "pw": "jr", 
+               "fname": "Jeff", 
+               "lname": "Randell", 
+               "email": "JeffR@email.com", 
+               "bio": "Jeff Randell is one of the three main characters in Clarence. Clarence's best friend, Jeff, is a bit of a square with a long list of phobias, but even someone as uptight as Jeff can't help but have fun when Clarence is around. He is both the tritagonist and a semi-antagonist.",
+               "url": "http://vignette2.wikia.nocookie.net/clarence/images/6/6c/This_is_Jeffrey_Randell_from_the_6_clock_news.png/revision/latest?cb=20150407232224"
+            }
+        ]
+
+        for user_dict in users_dicts:
+            user = User.register(user_dict["username"], user_dict["fname"], user_dict["lname"], user_dict["pw"], user_dict["email"])
+            response = urlopen(user_dict["url"])
+            img = response.read()
+            avatar_image = images.resize(img, 150, 150, crop_to_fit=True)
+            user.avatar_image = avatar_image
+            user.bio = user_dict["bio"]
+            user.put()
+
+
+
 
 app = webapp2.WSGIApplication([('/', MainPage),
                                ('/newpost', NewPostPage),

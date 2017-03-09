@@ -1,6 +1,6 @@
 import random
 import hashlib
-from urllib import urlopen
+
 
 
 
@@ -30,19 +30,9 @@ class User(db.Model):
     avatar_image = db.BlobProperty()
     bio = db.TextProperty()
 
-
-    @classmethod
-    def create_sample_users(cls):
-        pw = make_pw_hash("User1", "pass")
-        user = User.register("User1", "John", "Smith", pw, "John@email.com")
-
-        url = 'http://e0.365dm.com/13/09/800x600/Chelsea-v-Basel-Frank-Lampard_3005627.jpg?20131107160649'
-        response = urlopen(url)
-        img = response.read()
-        avatar_image = images.resize(img, 150, 150, crop_to_fit=True)
-
-        user.avatar_image = avatar_image
-        user.put()
+    def get_formatted_bio(self):
+        if self.bio:
+            return self.bio.replace("\n", "<br>")
 
     @classmethod 
     def username_in_use(cls, username):
