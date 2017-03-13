@@ -6,6 +6,7 @@ import hmac
 import random
 import hashlib
 import time
+from random import randint
 from urllib import urlopen
 from models.user import User
 from models.post import Post
@@ -509,8 +510,60 @@ class InitHandler(Handler):
                "email": "JeffR@email.com", 
                "bio": "Jeff Randell is one of the three main characters in Clarence. Clarence's best friend, Jeff, is a bit of a square with a long list of phobias, but even someone as uptight as Jeff can't help but have fun when Clarence is around. He is both the tritagonist and a semi-antagonist.",
                "url": "http://vignette2.wikia.nocookie.net/clarence/images/6/6c/This_is_Jeffrey_Randell_from_the_6_clock_news.png/revision/latest?cb=20150407232224"
+            },
+            {
+               "username": "cbuser", 
+               "pw": "cb", 
+               "fname": "Courage", 
+               "lname": "Bagge", 
+               "email": "CourageB@email.com", 
+               "bio": "Despite his signature cowardly demeanor, Courage does live up to the meaning of his name. Because of a kidnapping incident with his parents, he was abandoned as a puppy, found by Muriel, and began fearing everything. This fear is easily swallowed, however, when Muriel's safety is put into jeopardy or trouble falls upon him in general. Not only because he wishes to protect Muriel, but because the events of his most painful memory drives him to do so in fear of losing another loved one.",
+               "url": "http://vignette1.wikia.nocookie.net/courage/images/1/11/Courage.a.jpg/revision/latest/scale-to-width-down/310?cb=20110304185658"
+            },
+            {
+               "username": "asuser", 
+               "pw": "as", 
+               "fname": "Arnold", 
+               "lname": "Shortman", 
+               "email": "ArnoldS@email.com", 
+               "bio": "Arnold Phillip Shortman is a fictional character created by Craig Bartlett. He has featured in claymation shorts and comics, but his main role has been the main protagonist of the Nickelodeon animated television series Hey Arnold!. His head is shaped like a giant football, thus earning him the nickname \"Football Head\".",
+               "url": "http://vignette3.wikia.nocookie.net/heyarnold/images/f/f6/Arnold.jpg/revision/latest/scale-to-width-down/200?cb=20140706192844"
             }
+
         ]
+
+        lorem_ipsums = ["Lorem ipsum dolor sit amet, pri vocent partiendo ne, in eam quis quidam ceteros, ea vim amet modo reformidans. Ludus posidonium an mea, scripta omnesque expetendis usu in, quis tation labore ne usu. Dicta essent sit et. Sea ex dicant propriae conceptam. Invenire scribentur ne pri, id elitr recteque torquatos his. Eu officiis luptatum pro.\n",
+                "Ex labores dissentias eum. Has liber vituperatoribus ea. Elit feugiat ut sed, ius mundi invidunt aliquando et. Eu democritum interesset ullamcorper nec, ei nam prodesset delicatissimi. Everti molestiae no duo, duo nusquam fierent ei, nonumes eligendi ex mei.\n",
+                "Est ad saperet definiebas scriptorem. Ex vel melius probatus ullamcorper, mel congue petentium an. Sit epicuri evertitur id, usu ea fugit altera. Cu usu option instructior. An mea vitae feugiat consequuntur, ea has dicta facilisi iudicabit. Nullam timeam an sed, no eum paulo omnesque tacimates.\n",
+                "Ius cu error nominavi, duo elit saepe causae ne. At tractatos explicari vis, esse fugit tritani pro ne. An vim rebum dictas nostrum. Est quot nominati an. Dico solum vix ei.\n",
+                "Magna virtute vix ea, rationibus constituto et eos. Decore tamquam delenit sea ei, appetere pertinax pro et. Ut qui pertinax expetenda, ad eam etiam dignissim. Ne mel malorum expetenda. Stet eirmod ad his, mei doctus pertinax ea.\n",
+                "Prompta saperet pertinacia sit no. Ei per vivendo partiendo. Ius solet delenit volutpat ex, cu augue ponderum quo. Vim zril mentitum appetere id, id ridens petentium vituperata vis.\n",
+                "Ferri principes sit ut. Ad soleat voluptua pro. Pri pericula explicari te, albucius percipit te vim. Cum tempor oblique atomorum ex, sanctus volumus mediocrem ne sed. Ad veritus consequat vel, vis cu graeco singulis facilisis.\n",
+                "Illud patrioque evertitur sit in. Ex reque sensibus efficiantur vel. Sed cu quis affert, vero prima iracundia vis cu. Mea etiam luptatum et, pri meis quando iracundia at. Meis everti ei usu, eu his choro dolorum.\n",
+                "Cu quo soluta partiendo, petentium assueverit constituam has in. Animal qualisque an eos, odio unum detracto ei vel. At his dicta utamur. No putant laboramus his, ei cum tollit delectus lucilius, et duo quaeque accusamus. Est eu consul insolens atomorum. Mel illud nusquam suscipiantur ei, per id quot adipisci. Sea te veritus vocibus incorrupte.\n",
+                "Usu in quot repudiare interesset, novum epicurei vituperatoribus et cum. Ea mei movet nullam neglegentur, fabulas saperet te eos. Qui stet oporteat indoctum no, unum nostrum deleniti ne sit. Ferri pertinax eam no, ex latine persecuti per. Ut quo luptatum gloriatur democritum.\n"
+            ]
+
+        imgs = [
+            "https://images3.alphacoders.com/675/675273.jpg",
+            "https://blogs-images.forbes.com/erikkain/files/2017/01/Switch-gamepad.jpg",
+            "http://sawadacoffee.com/wp-content/uploads/Sawada-Coffee-10DEC2015-003.jpg",
+            "https://www.nobrowcoffee.com/wp-content/uploads/2016/04/coffee-wallpaper-1306-1433-hd-wallpapers.jpg",
+            "https://cdn0.vox-cdn.com/uploads/chorus_image/image/48851021/shutterstock_249549703.0.0.jpg",
+            "http://media3.s-nbcnews.com/j/newscms/2016_32/1665641/ss-160812-twip-02_3380f5e9d30b766138155f8c3f11f9a8.nbcnews-fp-1200-800.jpg"
+        ]
+
+        titles = [
+            "Lifehax: Turn your pizza upside for more flavor",
+            "Chemistry 101: Sandals are OK",
+            "I will beat you at FIFA no questions asked",
+            "One easy trick to win at Smash4: Play Bayo or Cloud",
+            "Zelda BOTW is my spirit animal",
+            "14 Things that remind you of pretending to be grunge in the 90's",
+            "I love Frank Ocean",
+            "How to 1337sp34k like the youth"
+        ]
+
 
         for user_dict in users_dicts:
             user = User.register(user_dict["username"], user_dict["fname"], user_dict["lname"], user_dict["pw"], user_dict["email"])
@@ -520,6 +573,28 @@ class InitHandler(Handler):
             user.avatar_image = avatar_image
             user.bio = user_dict["bio"]
             user.put()
+
+
+            for _ in range(randint(2, 5)):
+                title = titles[randint(0, 7)]
+                content = ''.join([lorem_ipsums[randint(0, 9)] for x in range(randint(3, 10))])
+                img_url = randint(0, 5)
+                response = urlopen(imgs[img_url])
+                header_img = response.read()
+                author_id = str(user.key().id())
+
+                # create post object
+                post = Post(title=title, 
+                            content=content, 
+                            author_id=author_id)
+                try:
+                    post.change_header_image(header_img)
+                except images.BadImageError:
+                    print img_url
+
+                post.create_snippet()
+
+                post.put()
 
 
 
