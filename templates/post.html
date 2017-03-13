@@ -13,7 +13,14 @@
 					<img class="center-block post-image img-responsive" src="/postimg?img_id={{post.header_image_thumb}}">
 				</picture>
 				<div class="col-xs-12 post-summary-title"><h3>{{post.title}}</h3></div>
-				<div class="col-xs-12"><h6>{{post.get_author_name()}}</h6></div>
+			</div>
+			<div class="row post-summary-info">
+				<div class="col-xs-6 post-author"><h6>{{post.get_author_name()}}</h6></div>
+				<div class="col-xs-6 text-right post-stats">
+					<i class="fa fa-commenting" aria-hidden="true"> 123</i>
+					<i class="fa fa-thumbs-up" aria-hidden="true"> 456</i>
+					<i class="fa fa-eye" aria-hidden="true"> 789</i>
+				</div>
 			</div>
 			<div class="row post-summary-content">
 				<div class="col-xs-12 post-summary-content"><p>{{post.get_formatted_text() | safe }}</p></div>
@@ -24,4 +31,7 @@
 		</div>
 	</div>
 </div>
+
+
 {% endblock %}
+

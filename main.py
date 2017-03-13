@@ -554,7 +554,7 @@ class InitHandler(Handler):
         ]
 
         titles = [
-            "Lifehax: Turn your pizza upside for more flavor",
+            "Lifehax: Turn your pizza upside down for more flavor",
             "Chemistry 101: Sandals are OK",
             "I will beat you at FIFA no questions asked",
             "One easy trick to win at Smash4: Play Bayo or Cloud",
@@ -577,7 +577,7 @@ class InitHandler(Handler):
 
             for _ in range(randint(2, 5)):
                 title = titles[randint(0, 7)]
-                content = ''.join([lorem_ipsums[randint(0, 9)] for x in range(randint(3, 10))])
+                content = '\n'.join([lorem_ipsums[randint(0, 9)] for x in range(randint(3, 10))])
                 img_url = randint(0, 5)
                 response = urlopen(imgs[img_url])
                 header_img = response.read()

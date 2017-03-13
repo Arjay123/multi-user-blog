@@ -64,7 +64,9 @@ body{
 
 	
 }
-
+.fa {
+	padding-right: 10px;
+}
 .author-header {
 	padding-bottom: 25px;
 }
