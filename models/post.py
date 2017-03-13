@@ -13,6 +13,23 @@ class Post(db.Model):
     snippet = db.TextProperty()
     created = db.DateTimeProperty(auto_now_add=True)
     author_id = db.StringProperty(required=True)
+    views = db.IntegerProperty(default=0)
+    likes = db.ListProperty(int, default=[])
+
+    def like(self, author_id):
+        if not self.user_liked(author_id):
+            self.likes.append(author_id)
+
+
+    def unlike(self, author_id):
+        if self.user_liked(author_id):
+            self.likes.remove(author_id)
+
+    def user_liked(self, author_id):
+        return author_id in self.likes
+
+    def inc_views(self):
+        self.views = self.views + 1
 
 
     """

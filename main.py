@@ -414,9 +414,32 @@ class PostPage(Handler):
             key = db.Key.from_path('Post', int(post_id))
             post = db.get(key)
             if post:
-                self.render("post.html", post=post)
+                post.inc_views()
+                post.put()
+                params = { "post": post }
+                if self.user:
+                    params["user_liked"] = post.user_liked(self.user.key().id())
+                self.render("post.html", **params)
             else:
                 self.redirect("/")
+
+    def post(self, post_id):
+        if post_id and post_id.isdigit():
+            key = db.Key.from_path('Post', int(post_id))
+            post = db.get(key)
+
+            if post:
+                like_status = self.request.get("like-status")
+
+                if like_status == "like":
+                    post.like(self.user.key().id())
+                    post.put()
+                elif like_status == "unlike":
+                    post.unlike(self.user.key().id())
+                    post.put()
+                    
+                self.render("post.html", post=post, user_liked=post.user_liked(self.user.key().id()))
+
 
 """
 Authors page
@@ -482,6 +505,12 @@ class NewPostPage(Handler):
         
 class InitHandler(Handler):
     def get(self):
+
+        for user in User.all():
+            user.delete()
+
+        for post in Post.all():
+            post.delete()
 
         users_dicts = [
             {
