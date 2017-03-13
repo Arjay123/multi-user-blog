@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% from "macros.html" import post_thumb, masonry %}
+{% from "macros.html" import post_thumb, isotope %}
 {% block content %}
 <div class="row author-header">
 	<div class="col-xs-12 text-center">
@@ -40,5 +40,5 @@
 {% block scripts %}
 
 
-{{masonry()}}
+{{isotope()}}
 {% endblock scripts %}

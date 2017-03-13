@@ -51,3 +51,20 @@ var $grid = $('.posts').imagesLoaded(function() {
 </script>
 
 {% endmacro %}
+
+{% macro isotope() %}
+<script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.js"></script>
+<script src="https://npmcdn.com/imagesloaded@4.1/imagesloaded.pkgd.min.js"></script>
+
+<script>
+var $grid = $('.posts').imagesLoaded(function() {
+  // init Masonry after all images have loaded
+  $grid.isotope({
+    itemSelector: '.post',
+    layoutMode: 'fitRows'
+  });
+});
+
+
+</script>
+{% endmacro %}
