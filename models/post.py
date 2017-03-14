@@ -2,6 +2,7 @@ from comment import Comment
 from google.appengine.ext import db
 from google.appengine.api import images
 from postphoto import PostPhoto
+from user import User
 
 
 class Post(db.Model):
@@ -203,8 +204,7 @@ class Post(db.Model):
         Returns:
             Returns first and last name of the author
         """
-        author_key = db.Key.from_path('User', self.author_id)
-        author = db.get(author_key)
+        author = User.get_by_id(self.author_id)
         if author:
             return author.get_full_name()
 
