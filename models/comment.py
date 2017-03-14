@@ -1,6 +1,7 @@
 from google.appengine.ext import db
 from user import User
 
+
 class Comment(db.Model):
     """ A comment submitted by a user about a Post entity
 
