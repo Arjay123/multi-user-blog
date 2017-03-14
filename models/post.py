@@ -16,6 +16,7 @@ class Post(db.Model):
     author_id = db.StringProperty(required=True)
     views = db.IntegerProperty(default=0)
     likes = db.ListProperty(int, default=[])
+    comment_num = db.IntegerProperty(default=0)
 
 
     def get_comments(self):
@@ -26,13 +27,19 @@ class Post(db.Model):
         comment = Comment(user_id=user_id, post_id=self.key().id(), content=content)
         comment.put()
 
+        self.comment_num = self.comment_num + 1
+        self.put()
 
     def delete_comment(self, comment_id):
         comment = self.get_comment(comment_id)
-
         if comment:
-            self.comments.remove(comment.key().id())
             comment.delete()
+
+            print self.comment_num
+            self.comment_num = self.comment_num - 1
+            self.put()
+            print self.comment_num
+
 
     def get_comment(self, comment_id):
         key = db.Key.from_path('Comment', int(comment_id))

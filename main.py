@@ -437,11 +437,18 @@ class PostPage(Handler):
                     elif submit == "unlike":
                         post.unlike(self.user.key().id())
                         post.put()
-                    else:
+                    elif submit == "comment":
                         comment = self.request.get("comment")
                         if comment:
                             post.add_comment(self.user.key().id(), comment)
                             time.sleep(2)
+                    elif submit == "uncomment":
+                        comment_id = self.request.get("comment_id")
+                        if comment_id:
+                            comment_id = int(comment_id)
+                            post.delete_comment(comment_id)
+                            time.sleep(2)
+
 
                 
                 self.redirect("/post/%s" % str(post_id))
@@ -600,7 +607,9 @@ class InitHandler(Handler):
             "11 things you didn't know about clickbait titles"
         ]
 
+        user_ids = {}
 
+        # create users
         for user_dict in users_dicts:
             user = User.register(user_dict["username"], user_dict["fname"], user_dict["lname"], user_dict["pw"], user_dict["email"])
             response = urlopen(user_dict["url"])
@@ -610,27 +619,41 @@ class InitHandler(Handler):
             user.bio = user_dict["bio"]
             user.put()
 
+            user_ids[user.username] = user.key().id()
 
-            for _ in range(randint(2, 5)):
-                title = titles[randint(0, 7)]
-                content = '\n'.join([lorem_ipsums[randint(0, 9)] for x in range(randint(3, 10))])
-                img_url = randint(0, 5)
-                response = urlopen(imgs[img_url])
-                header_img = response.read()
-                author_id = str(user.key().id())
+        # create posts
+        for _ in range(randint(15, 25)):
+            title = titles[randint(0, 7)]
+            content = '\n'.join([lorem_ipsums[randint(0, 9)] for x in range(randint(3, 10))])
+            img_url = randint(0, 5)
+            response = urlopen(imgs[img_url])
+            header_img = response.read()
+            author_id = str(user_ids[random.choice(user_ids.keys())])
 
-                # create post object
-                post = Post(title=title, 
-                            content=content, 
-                            author_id=author_id)
-                try:
-                    post.change_header_image(header_img)
-                except images.BadImageError:
-                    print img_url
+            # create post object
+            post = Post(title=title, 
+                        content=content, 
+                        author_id=author_id,
+                        views=random.choice(range(25, 100)))
+            try:
+                post.change_header_image(header_img)
+            except images.BadImageError:
+                print img_url
 
-                post.create_snippet()
+            post.create_snippet()
 
-                post.put()
+
+            # likes
+            users_who_like = random.sample(user_ids.keys(), randint(0, 5))
+            for key in users_who_like:
+                post.like(user_ids[key])
+
+            post.put()
+
+
+
+
+        # comments
 
 
 
