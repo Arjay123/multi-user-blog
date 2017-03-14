@@ -71,27 +71,12 @@ class Post(db.Model):
         Args:
             comment_id - id of comment
         """
-        comment = self.get_comment(comment_id)
+        comment = Comment.get_by_id(comment_id)
         if comment:
             comment.delete()
 
             self.comment_num = self.comment_num - 1
             self.put()
-
-
-    def get_comment(self, comment_id):
-        """ Get comment using id
-        
-        Args:
-            comment_id - id of comment
-
-        Returns:
-            Comment entity associated w/ id
-        """
-        key = db.Key.from_path('Comment', int(comment_id))
-        comment = db.get(key)
-
-        return comment
 
 
     def like(self, author_id):
@@ -194,7 +179,7 @@ class Post(db.Model):
 
 
     def get_formatted_text(self):
-       """ Gets content formatted for html pages
+        """ Gets content formatted for html pages
 
         Returns:
             Formatted content
