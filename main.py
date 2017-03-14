@@ -413,6 +413,7 @@ class PostPage(Handler):
         if post_id and post_id.isdigit():
             key = db.Key.from_path('Post', int(post_id))
             post = db.get(key)
+            
             if post:
                 post.inc_views()
                 post.put()
@@ -608,6 +609,40 @@ class InitHandler(Handler):
         ]
 
         user_ids = {}
+        user_comments = {
+                            "asuser": 
+                                    [
+                                       "What's wrong with old things? Some old things are great. ",
+                                       "Hey, leave those kids alone.",
+                                       "Hey Grandpa, I've got a problem. " 
+                                    ],
+                            "cwuser": 
+                                    [
+                                        "I think that frog's dead",
+                                        "Mmmm...flavory",
+                                        "Hit the pinata"
+                                    ],
+                            "cbuser": 
+                                    [
+                                        "AAAAAAAAAAAAAAAAAAAA!", 
+                                        "Muriel, I'll save you!",
+                                        "The things I do for love."
+                                    ],
+                            "jruser": 
+                                    [
+                                        "You can't make me, I'm not moving an inch.",
+                                        "Why don't we just ask someone?",
+                                        "I was worried you guys got lost or something."
+                                    ],
+                            "rsuser": 
+                                    [
+                                        "What are you talkin' about? Pinatas are awesome.",
+                                        "Hit the pinata"
+                                    ]
+                        }
+
+
+
 
         # create users
         for user_dict in users_dicts:
@@ -643,11 +678,16 @@ class InitHandler(Handler):
             post.create_snippet()
 
 
-            # likes
+            # likes and comments
+            
+
+
+            post.put()
+
             users_who_like = random.sample(user_ids.keys(), randint(0, 5))
             for key in users_who_like:
                 post.like(user_ids[key])
-
+                post.add_comment(int(user_ids[key]), random.choice(user_comments[key]))
             post.put()
 
 

@@ -68,7 +68,8 @@
 				<h4>{{comment.get_user_name()}}</h4>
 				<p>{{comment.get_formatted_text() | safe}}</p>
 
-				{% if user.key().id() == comment.user_id %}
+
+				{% if user and user.key().id() == comment.user_id %}
 				<form method="post">
 					<input type="text" hidden name="comment_id" value="{{comment.key().id()}}">
 					<button class="btn btn-danger pull-right" type="submit" name="submit" value="uncomment">Delete this comment</button>
@@ -77,7 +78,7 @@
 			</div>
 		</div>
 {% endfor %}
-
+		{% if user %}
 		<div class="row">
 			<div class="col-xs-12">
 				<form method="post">
@@ -88,6 +89,7 @@
 				</form>
 			</div>
 		</div>
+		{% endif %}
 
 	</div>
 </div>

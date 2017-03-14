@@ -35,10 +35,8 @@ class Post(db.Model):
         if comment:
             comment.delete()
 
-            print self.comment_num
             self.comment_num = self.comment_num - 1
             self.put()
-            print self.comment_num
 
 
     def get_comment(self, comment_id):
@@ -137,5 +135,8 @@ class Post(db.Model):
                       self.header_image_med,
                       self.header_image_large]:
             PostPhoto.delete_by_id(photo_id)
+
+        for comment in self.get_comments():
+            comment.delete()
 
         super(Post, self).delete()
