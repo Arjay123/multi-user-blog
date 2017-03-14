@@ -17,6 +17,39 @@
 {%- endmacro %}
 
 
+{% macro post_full(post) %}
+
+	<div class="row post-full">
+		<div class="col-xs-12">
+
+			<div class="row post-full-header">
+				<picture class="col-xs-12">
+					<source media="(min-width: 768px)" srcset="/postimg?img_id={{post.header_image_med}} 1x, /postimg?img_id={{post.header_image_large}} 2x">
+					<source media="(min-width: 375px)" srcset="/postimg?img_id={{post.header_image_small}} 1x, /postimg?img_id={{post.header_image_med}} 2x">
+					<img class="center-block post-image img-responsive" src="/postimg?img_id={{post.header_image_thumb}}">
+				</picture>
+				<div class="col-xs-12 post-full-title"><h3>{{post.title}}</h3></div>
+			</div>
+
+			<div class="row post-full-info">
+				<div class="col-xs-6 post-author"><h6>{{post.get_author_name()}}</h6></div>
+				<div class="col-xs-6 text-right post-stats">
+					{{ post_stats(post.comment_num, post.likes | length, post.views) }}
+				</div>
+			</div>
+
+			<div class="row post-summary-content">
+				<div class="col-xs-12 post-summary-content"><p>{{post.get_formatted_text() | safe}}</p></div>
+			</div>
+
+			<div class="row row-eq-height post-summary-footer">
+				<div class="col-xs-6 post-summary-date pull-center"><h5><small>{{post.created.date().strftime("%b %d, %Y")}}</small></h5></div>
+			</div>
+		</div>
+	</div>
+
+{% endmacro %}
+
 
 {% macro post_stats(comment_num, likes, views) %}
 
