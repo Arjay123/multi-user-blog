@@ -78,6 +78,7 @@
 			</div>
 		</div>
 {% endfor %}
+
 		{% if user %}
 		<div class="row">
 			<div class="col-xs-12">
@@ -87,6 +88,12 @@
 			  		</div>
 			  		<button type="submit" name="submit" value="comment" class="btn btn-default pull-right">Submit</button>
 				</form>
+			</div>
+		</div>
+		{% else %}
+		<div class="row">
+			<div class="col-xs-12">
+				<p>Log in to post comments...</p>
 			</div>
 		</div>
 		{% endif %}

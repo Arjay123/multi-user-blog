@@ -136,7 +136,7 @@ List of posts created by current user
 """
 class UserPostsPage(Handler):
     def get(self):
-        posts = Post.gql("WHERE author_id='%s' ORDER BY created DESC" % 
+        posts = Post.gql("WHERE author_id=%s ORDER BY created DESC" % 
             str(self.user.key().id()))
         self.render("post_list.html", posts=posts.fetch(limit=None))
 
@@ -192,7 +192,7 @@ class DeletePostHandler(Handler):
 
             # only user who created post can delete it
             if post:
-                if not(self.user and post.author_id == str(self.user.key().id())):
+                if not(self.user and post.author_id == self.user.key().id()):
                     self.redirect('/signup')
                     return
 
@@ -413,7 +413,7 @@ class PostPage(Handler):
         if post_id and post_id.isdigit():
             key = db.Key.from_path('Post', int(post_id))
             post = db.get(key)
-            
+
             if post:
                 post.inc_views()
                 post.put()
@@ -510,7 +510,7 @@ class NewPostPage(Handler):
         # create post object
         post = Post(title=title, 
                     content=content, 
-                    author_id=str(self.user.key().id()))
+                    author_id=self.user.key().id())
 
         post.change_header_image(header_image_original)
         post.create_snippet()
@@ -663,12 +663,12 @@ class InitHandler(Handler):
             img_url = randint(0, 5)
             response = urlopen(imgs[img_url])
             header_img = response.read()
-            author_id = str(user_ids[random.choice(user_ids.keys())])
+            author_id = user_ids[random.choice(user_ids.keys())]
 
             # create post object
             post = Post(title=title, 
                         content=content, 
-                        author_id=author_id,
+                        author_id=int(author_id),
                         views=random.choice(range(25, 100)))
             try:
                 post.change_header_image(header_img)
@@ -676,25 +676,14 @@ class InitHandler(Handler):
                 print img_url
 
             post.create_snippet()
-
-
-            # likes and comments
-            
-
-
             post.put()
 
+            # likes and comments
             users_who_like = random.sample(user_ids.keys(), randint(0, 5))
             for key in users_who_like:
                 post.like(user_ids[key])
                 post.add_comment(int(user_ids[key]), random.choice(user_comments[key]))
             post.put()
-
-
-
-
-        # comments
-
 
 
 

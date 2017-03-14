@@ -13,7 +13,7 @@ class Post(db.Model):
     header_image_large = db.StringProperty()
     snippet = db.TextProperty()
     created = db.DateTimeProperty(auto_now_add=True)
-    author_id = db.StringProperty(required=True)
+    author_id = db.IntegerProperty(required=True)
     views = db.IntegerProperty(default=0)
     likes = db.ListProperty(int, default=[])
     comment_num = db.IntegerProperty(default=0)
@@ -121,7 +121,7 @@ class Post(db.Model):
 
 
     def get_author_name(self):
-        author_key = db.Key.from_path('User', int(self.author_id))
+        author_key = db.Key.from_path('User', self.author_id)
         author = db.get(author_key)
         return author.first_name + " " + author.last_name
 
