@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% from "macros.html" import author_img %}
 
 {% block content %}
 <div class="row author-header">
@@ -13,7 +13,7 @@
 		<div class="row author-summary text-center">
 			<div class="col-xs-12">
 				<a href="/author/{{author.key().id()}}">
-					<img class="img-responsive center-block img-circle" src="/userimg?img_id={{author.key().id()}}">
+					{{author_img(author.key().id())}}
 					<h3>{{author.first_name + " " + author.last_name}}</h3>
 				</a>
 			</div>
