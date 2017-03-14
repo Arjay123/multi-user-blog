@@ -146,4 +146,12 @@ body{
 .nav-tabs {
     margin-bottom: 0;
 }
+.comments-hdr-hr {
+	border: 1px solid #696773;
+}
+
+.comment { 
+
+	padding-bottom: 30px;
+}
 

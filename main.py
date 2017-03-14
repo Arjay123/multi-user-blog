@@ -429,16 +429,22 @@ class PostPage(Handler):
             post = db.get(key)
 
             if post:
-                like_status = self.request.get("like-status")
+                submit = self.request.get("submit")
+                if submit:
+                    if submit == "like":
+                        post.like(self.user.key().id())
+                        post.put()
+                    elif submit == "unlike":
+                        post.unlike(self.user.key().id())
+                        post.put()
+                    else:
+                        comment = self.request.get("comment")
+                        if comment:
+                            post.add_comment(self.user.key().id(), comment)
+                            time.sleep(2)
 
-                if like_status == "like":
-                    post.like(self.user.key().id())
-                    post.put()
-                elif like_status == "unlike":
-                    post.unlike(self.user.key().id())
-                    post.put()
-                    
-                self.render("post.html", post=post, user_liked=post.user_liked(self.user.key().id()))
+                
+                self.redirect("/post/%s" % str(post_id))
 
 
 """
@@ -461,6 +467,7 @@ class AuthorPage(Handler):
         author = User.get_by_id(int(author_id))
         posts = Post.gql("WHERE author_id='%s' ORDER BY created DESC" % str(author.key().id()))
         self.render("author.html", author=author, posts=posts)
+
 
 """
 Handler for new post submissions
@@ -588,9 +595,9 @@ class InitHandler(Handler):
             "I will beat you at FIFA no questions asked",
             "One easy trick to win at Smash4: Play Bayo or Cloud",
             "Zelda BOTW is my spirit animal",
-            "14 Things that remind you of pretending to be grunge in the 90's",
+            "10 reasons why Arjay is cool",
             "I love Frank Ocean",
-            "How to 1337sp34k like the youth"
+            "11 things you didn't know about clickbait titles"
         ]
 
 

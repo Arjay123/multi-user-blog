@@ -10,6 +10,17 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: Comment
+  properties:
+  - name: post_id
+  - name: created
+    direction: desc
+
+- kind: Comment
+  properties:
+  - name: post_id
+  - name: created
+
 - kind: Post
   properties:
   - name: author_id

@@ -30,6 +30,9 @@ class User(db.Model):
     avatar_image = db.BlobProperty()
     bio = db.TextProperty()
 
+    def get_full_name(self):
+        return self.first_name + " " + self.last_name
+
     def get_formatted_bio(self):
         if self.bio:
             return self.bio.replace("\n", "<br>")

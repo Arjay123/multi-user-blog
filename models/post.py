@@ -2,6 +2,7 @@ from google.appengine.ext import db
 from google.appengine.api import images
 
 from postphoto import PostPhoto
+from comment import Comment
 
 class Post(db.Model):
     title = db.StringProperty(required=True)
@@ -15,6 +16,29 @@ class Post(db.Model):
     author_id = db.StringProperty(required=True)
     views = db.IntegerProperty(default=0)
     likes = db.ListProperty(int, default=[])
+
+
+    def get_comments(self):
+        q = Comment.gql("WHERE post_id=%s ORDER BY created DESC" % str(self.key().id()))
+        return q.run()
+
+    def add_comment(self, user_id, content):
+        comment = Comment(user_id=user_id, post_id=self.key().id(), content=content)
+        comment.put()
+
+
+    def delete_comment(self, comment_id):
+        comment = self.get_comment(comment_id)
+
+        if comment:
+            self.comments.remove(comment.key().id())
+            comment.delete()
+
+    def get_comment(self, comment_id):
+        key = db.Key.from_path('Comment', int(comment_id))
+        comment = db.get(key)
+
+        return comment
 
     def like(self, author_id):
         if not self.user_liked(author_id):
