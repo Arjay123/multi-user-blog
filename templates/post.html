@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% from "macros.html" import post_stats %}
 
 {% block content %}
 
@@ -16,9 +16,7 @@
 		<div class="row post-summary-info">
 			<div class="col-xs-6 post-author"><h6>{{post.get_author_name()}}</h6></div>
 			<div class="col-xs-6 text-right post-stats">
-				<i class="fa fa-commenting" aria-hidden="true"> {{post.comment_num}}</i>
-				<i class="fa fa-thumbs-up" aria-hidden="true"> {{post.likes | length}}</i>
-				<i class="fa fa-eye" aria-hidden="true"> {{post.views}}</i>
+				{{ post_stats(post.comment_num, post.likes | length, post.views) }}
 			</div>
 		</div>
 		<div class="row post-summary-content">
