@@ -1,18 +1,28 @@
 {% extends "base.html" %}
 
-{% from "macros.html" import post_form %}
+{% from "macros.html" import post_form, break %}
 
 {% block content %}
-	<div class="row">
-		<div class="col-xs-10 col-xs-offset-1 text-center">
-			<h2>Create a new post</h2>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-xs-10 col-xs-offset-1">
 
-			{{ post_form(title, content)}}
+<div class="row">
+	<div class="col-xs-10 col-xs-offset-1">
 
+		<div class="row new-post-header text-center">
+			<div class="col-xs-12">
+				<h2>Create a new post</h2>
+			</div>
 		</div>
+
+		{{ break() }}
+		
+		<div class="row post-form">
+			<div class="col-xs-12">
+				{{ post_form(title, content)}}
+			</div>
+		</div>		
+
 	</div>
+</div>
+
+
 {% endblock %}
