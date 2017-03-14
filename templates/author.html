@@ -1,20 +1,21 @@
 {% extends "base.html" %}
+{% from "macros.html" import post_thumb, isotope, author_img, break %}
 
-{% from "macros.html" import post_thumb, isotope %}
+
+
 {% block content %}
-<div class="row author-header">
-	<div class="col-xs-12 text-center">
-		<h2>About the author</h2>
-	</div>
-</div>
+
 <div class="row author">
 	<div class="col-xs-10 col-xs-offset-1">
+		<div class="row author-header">
+			<div class="col-xs-12 text-center">
+				<h2>About the author</h2>
+			</div>
+		</div>
 		<div class="row author-summary">
 			<div class="col-xs-12 text-center">
-				
-					<img class="img-responsive center-block img-circle" src="/userimg?img_id={{author.key().id()}}">
-					<h3>{{author.first_name + " " + author.last_name}}</h3>
-
+				{{author_img(author.key().id())}}
+				<h3>{{author.first_name + " " + author.last_name}}</h3>
 			</div>
 			<div class="author-bio col-xs-12">
 				<p>{{author.get_formatted_bio()}}</p>
@@ -22,12 +23,13 @@
 		</div>
 	</div>
 </div>
-<hr>
-<div class="row author-posts-header">
+ 
+{{ break() }}
+
+<div class="row posts-header">
 	<div class="col-xs-12 text-center">
 		<h2>Posts by this author</h2>
 	</div>
-
 </div>
 <div class="row posts">
 	{% for post in posts %}
@@ -35,10 +37,14 @@
 	{% endfor %}
 </div>
 
+
 {% endblock %}
+
+
+
 
 {% block scripts %}
 
-
 {{isotope()}}
+
 {% endblock scripts %}

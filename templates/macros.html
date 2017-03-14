@@ -52,7 +52,26 @@
 </div>
 {% endmacro %}
 
+{% macro break(visible=false) %}
 
+	<div class="row break">
+		<div class="col-xs-12">
+			{% if visible %}
+				<hr class="hr-vis">
+			{% else %}
+				<hr>
+			{% endif %}
+		</div>
+	</div>
+
+{% endmacro %}
+
+
+{% macro author_img(author_key) %}
+
+	<img class="img-responsive center-block img-circle" src="/userimg?img_id={{author_key}}">
+
+{% endmacro %}
 
 {% macro isotope() %}
 <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.js"></script>

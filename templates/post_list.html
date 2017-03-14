@@ -19,10 +19,7 @@
 			<tr>
 				<td>{{post.title}}</td>
 				<td>{{post.created.date().strftime("%b %d, %Y")}}</td>
-				<td>
-
-				{{ post_stats(post.comment_num, post.likes | length, post.views)}}
-
+				<td>{{ post_stats(post.comment_num, post.likes | length, post.views)}}</td>
 				<td>
 					<form action="/edit/{{post.key().id()}}" class="edit-btn-frm">
 						<button class="btn btn-default" type="submit">Edit</button>
@@ -54,6 +51,7 @@
 </div>
 
 {% endblock %}
+
 
 {% block scripts %}
 <script>
