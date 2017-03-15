@@ -19,7 +19,23 @@
 				<!-- Brand and toggle get grouped for better mobile display -->
 				<div class="navbar-header">
 					{% if user %}
-					<div class="navbar-brand pull-left">Hello, {{user.first_name}}</div>
+					<div class="pull-left pull-center user-menu">
+						<button class="btn blog-header dropdown-toggle pull-center" type="button" id="dropdown-menu"
+						data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+							Hello, {{user.first_name}} <span class="caret"></span>
+						</button>
+
+						<ul class="dropdown-menu" arialabelled-by="dropdown-menu">
+							<li><a href="/postlist">View your posts</a></li>
+							<li><a href="/user">Settings</a></li>
+							<li><a href="/logout">Logout</a></li>
+						</ul>
+
+					</div>
+					{% else %}
+					<div class="navbar-brand">
+					<a class="nav-link" href="/signup">Login/Signup</a></div>
+
 					{% endif %}
 					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
 						<span class="sr-only">Toggle navigation</span>
@@ -35,15 +51,6 @@
 					<ul class="nav navbar-nav navbar-right pull-right">
 						<li class="active"><a class="nav-link" href="/">Home</a></li>
 						<li><a class="nav-link" href="/authors">Authors</a></li>
-
-						{% if not user %}
-
-						<li><a class="nav-link" href="/signup">Login/Signup</a></li> 
-
-						{% else %}
-
-						<li><a class="nav-link" href="/logout">Logout</a></li>
-						{% endif %}
 					</ul>
 				</div>
 				<!-- /.navbar-collapse -->

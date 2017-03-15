@@ -155,3 +155,17 @@ body{
 	padding-bottom: 30px;
 }
 
+.user-menu {
+    padding-left: 15px;
+}
+
+.dropdown-toggle:focus {
+    color: #EFF1F3;
+}
+
+.dropdown-menu,
+.dropdown-menu>li>a {
+    background-color: #272727;
+    color: #EFF1F3;
+}
+
