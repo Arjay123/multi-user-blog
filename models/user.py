@@ -1,18 +1,10 @@
 import hashlib
-import random
 from google.appengine.api import images
 from google.appengine.ext import db
+from security_helper import make_pw_hash
+from security_helper import make_salt
 from string import letters
 
-##### user stuff
-def make_salt(length = 5):
-    return ''.join(random.choice(letters) for x in xrange(length))
-
-def make_pw_hash(name, pw, salt = None):
-    if not salt:
-        salt = make_salt()
-    h = hashlib.sha256(name + pw + salt).hexdigest()
-    return '%s,%s' % (salt, h)
 
 
 class User(db.Model):
@@ -25,7 +17,7 @@ class User(db.Model):
         username - username used to log in
         first_name - first name
         last_name - last name
-        pw_hash - hashed password and salt separatated by |
+        pw_hash - hashed password and salt separatated by ,
         email - email
         avatar_image - actual image file of user's avatar
         bio - short biography of user
