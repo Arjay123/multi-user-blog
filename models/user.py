@@ -1,10 +1,36 @@
 import hashlib
+import random
 from google.appengine.api import images
 from google.appengine.ext import db
 from security_helper import make_pw_hash
 from security_helper import make_salt
 from string import letters
 
+
+def make_salt(length = 5):
+    """ Creates salt from random letters
+
+    Args:
+        length - length of salt string
+
+    Returns:
+        salt string
+    """
+    return ''.join(random.choice(letters) for x in xrange(length))
+
+
+def make_pw_hash(name, pw, salt = None):
+    """ creates hashed pw and salt string 
+    
+    Args:
+        name - username
+        pw - password
+        salt - previous salt, used for checking valid pw instead of creating
+    """
+    if not salt:
+        salt = make_salt()
+    h = hashlib.sha256(name + pw + salt).hexdigest()
+    return '%s,%s' % (salt, h)
 
 
 class User(db.Model):
@@ -55,6 +81,20 @@ class User(db.Model):
                     email = email)
 
 
+    @classmethod
+    def login(cls, username, pw):
+        """ Logs in user
+        
+        Checks if username and password are valid
+
+        Return:
+            User entity if crendentials match
+        """
+        u = User.gql("WHERE username='%s'" % username).get()
+        if u and u.valid_pw(username, pw):
+            return u
+
+
     def get_full_name(self):
         """ Returns first + last name concatenated
 
@@ -81,17 +121,6 @@ class User(db.Model):
         return self.pw_hash == make_pw_hash(username, pw, salt)
 
 
-    @classmethod
-    def login(cls, username, pw):
-        """ Logs in user
-        
-        Checks if username and password are valid
 
-        Return:
-            User entity if crendentials match
-        """
-        u = User.gql("WHERE username='%s'" % username).get()
-        if u and u.valid_pw(username, pw):
-            return u
 
     
