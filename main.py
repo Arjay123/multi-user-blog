@@ -28,8 +28,16 @@ USER_COOKIE_KEY = "user"
 
 
 def render_str(template, **params):
-        t = jinja_env.get_template(template)
-        return t.render(params)
+    """ Use jinja to convert templates to string to render html
+    
+    Args:
+        params - unpacked dictionary of parameters to be used in template
+
+    Returns:
+        Rendered template as string w/ params included
+    """
+    t = jinja_env.get_template(template)
+    return t.render(params)
 
 """
 Base class for page handlers, contains common methods
@@ -39,84 +47,113 @@ class Handler(webapp2.RequestHandler):
 
 
     def write(self, *a, **kw):
+        """ Writes template to response
+            
+        """
         self.response.out.write(*a, **kw)
 
-
-    """ 
-    before rendering the template, gets stored user object
-    and passes to page params
-    """
+    
     def render_str(self, template, **params):
+        """ 
+        before rendering the template, gets stored user object
+        and passes to page params
+
+        """
         params['user'] = self.user
         return render_str(template, **params)
 
 
     def render(self, template, **kw):
+        """ Calls render str to convert template to string format and
+        writes to response
+
+        """
         self.write(self.render_str(template, **kw))
 
 
-    """
-    create cookie value by hashing value w/ secret key
-    return: value and hashed value in the form '%s|%s'
-    """
     def make_secure_val(self, val):
+        """
+        create cookie value by hashing value w/ secret key
+
+        Args:
+            val - value to secure
+
+        Returns:
+            str containing value and hashed value separated by |
+        """
         return '%s|%s' % (val, hmac.new(secret, val).hexdigest())
 
 
-    """
-    check cookie value w/ hash value to ensure it hasn't been modified by
-    the requesting user
-
-    return: cookie value if valid, else None
-    """
     def check_secure_val(self, secure_val):
+        """
+        check cookie value w/ hash value to ensure it hasn't been modified by
+        the requesting user
+
+        return: cookie value if valid, else None
+        """
         val = secure_val.split('|')[0]
         if secure_val == self.make_secure_val(val):
             return val
 
-    """
-    sets cookie value
-    """
+    
     def set_cookie(self, name, value):
+        """  sets cookie value
+
+        """
         h = self.make_secure_val(value)
         self.response.headers.add_header('Set-Cookie', 
                 '%s=%s; Path=/' % (name, str(h)))
 
-    """
-    gets valid cookie value
-    """
+    
     def get_cookie(self, name):
+        """ Returns cookie value if valid
+
+        """
         cookie_val = self.request.cookies.get(name)
         return cookie_val and self.check_secure_val(cookie_val)
 
 
-    """
-    called before loading page, if user is logged in, gets user from db
-    using the id stored in USER_COOKIE_KEY cookie
-    """
     def initialize(self, *a, **kw):
+        """
+        called before loading page, if user is logged in, gets user from db
+        using the id stored in USER_COOKIE_KEY cookie
+        """
         webapp2.RequestHandler.initialize(self, *a, **kw)
         uid = self.get_cookie(USER_COOKIE_KEY)
         self.user = uid and User.get_by_id(int(uid))
 
 
     def login(self, uid):
+        """ logs in user by setting hashed cookie value to user ID in client
+            
+        """
         self.set_cookie(USER_COOKIE_KEY, uid)
 
 
     def logout(self):
+        """ delete user cookie value from client
+
+        """
         self.set_cookie(USER_COOKIE_KEY, "")
         self.user = None
 
 
     def is_logged_in(self):
+        """ Check if user is logged in
+
+        """
         return self.user
 
 
-"""
-Handler base class for any pages that edit the User object in the db
-"""
 class UserSettingsHandler(Handler):
+    """
+    Handler base class for any pages that edit the User object in the db
+
+    Attributes:
+        USER_RE - valid user regex
+        PASS_RE - valid password regex
+        EMAIL_RE - valid email regex
+    """
 
     USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
     def valid_username(self, username):
@@ -131,20 +168,20 @@ class UserSettingsHandler(Handler):
         return not email or self.EMAIL_RE.match(email)
 
 
-"""
-List of posts created by current user
-"""
 class UserPostsPage(Handler):
+    """ List of posts created by current logged in user
+    
+    """
     def get(self):
         posts = Post.gql("WHERE author_id=%s ORDER BY created DESC" % 
             str(self.user.key().id()))
         self.render("post_list.html", posts=posts.fetch(limit=None))
 
 
-"""
-Edit post handler
-"""
 class EditPostPage(Handler):
+    """ Edit existing post page
+
+    """
     def get(self, post_id):
         if post_id:
             post = Post.get_by_id(int(post_id))
@@ -160,6 +197,7 @@ class EditPostPage(Handler):
             new_header_image = self.request.get("img")
             submit = False
 
+            # TODO - add valid checks?
             if new_title:
                 submit=True
                 post.title = new_title
@@ -178,12 +216,10 @@ class EditPostPage(Handler):
             self.render("editpost.html", post=post)
 
 
-
-
-"""
-Delete post handler
-"""
 class DeletePostHandler(Handler):
+    """
+    Delete post handler
+    """
     def post(self):
         post_id = self.request.get("id")
 
@@ -205,11 +241,10 @@ class DeletePostHandler(Handler):
         self.redirect("/postlist")
 
 
-
-"""
-Settings page, user can change some of their information from here
-"""
 class UserPage(UserSettingsHandler):
+    """
+    Settings page, user can change some of their information from here
+    """
     def get(self):
         self.render("user.html")
 
@@ -223,7 +258,7 @@ class UserPage(UserSettingsHandler):
         bio = self.request.get("bio")
 
 
-
+        # todo add valid checks?
         if first_name:
             self.user.first_name = first_name
 
@@ -246,21 +281,21 @@ class UserPage(UserSettingsHandler):
         self.render("user.html")
 
 
-'''
-Logout page
-'''
 class LogoutPage(Handler):
+    """ Logout page
+
+    """
     def get(self):
         self.logout()
         self.redirect("/")
 
-"""
-Login/New user signup page
-"""
+
 class SignupPage(UserSettingsHandler):
+    """ Login/New user signup page
+
+    """
     def get(self):
 
-        # this page is not accessible by a logged in user
         if self.is_logged_in():
             self.redirect("/")
             return
@@ -269,7 +304,7 @@ class SignupPage(UserSettingsHandler):
 
     def post(self):
 
-        # get submitted values
+        # login
         if self.request.get("frm_submit") == "login":
             username = self.request.get("login_username")
             password = self.request.get("login_password")
@@ -291,6 +326,7 @@ class SignupPage(UserSettingsHandler):
             self.login(str(user.key().id()))
             self.redirect("/")
 
+        # signup
         else:
 
             username = self.request.get("username")
@@ -369,10 +405,11 @@ class SignupPage(UserSettingsHandler):
                 self.set_cookie(USER_COOKIE_KEY, str(user.key().id()))
                 self.redirect("/user")
 
-"""
-Handler for rendering user avatar images stored as BlobProperty values
-"""
+
 class UserImageHandler(Handler):
+    """ Handler for rendering user avatar images stored as BlobProperty values
+
+    """
     def get(self):
         img_id = self.request.get("img_id")
         if img_id and img_id.isdigit():
@@ -383,10 +420,11 @@ class UserImageHandler(Handler):
                 self.response.headers["Content-Type"] = "image/jpeg"
                 self.response.out.write(user.avatar_image)
 
-"""
-Handler for rendering post header images stored as BlobProperty values
-"""
+
 class PostImageHandler(Handler):
+    """ Handler for rendering post header images stored as BlobProperty values
+    
+    """
     def get(self):
         img_id = self.request.get("img_id")
         if img_id and img_id.isdigit():
@@ -397,18 +435,20 @@ class PostImageHandler(Handler):
                 self.response.headers["Content-Type"] = "image/jpeg"
                 self.response.out.write(photo.image)
 
-"""
-Home page handler
-"""
+
 class MainPage(Handler):
+    """ Home page handler
+
+    """
     def get(self):
         posts = Post.all().order('-created')
         self.render("blog.html", posts=posts)
 
-"""
-Single post page handler
-"""
+
 class PostPage(Handler):
+    """ Single post page
+
+    """
     def get(self, post_id):
         if post_id and post_id.isdigit():
             key = db.Key.from_path('Post', int(post_id))
@@ -455,19 +495,19 @@ class PostPage(Handler):
                 self.redirect("/post/%s" % str(post_id))
 
 
-"""
-Authors page
-"""
 class AuthorsPage(Handler):
+    """ Authors page 
+
+    """
     def get(self):
         authors = User.gql("ORDER BY first_name, last_name")
         self.render("authors.html", authors=authors)
 
 
-"""
-Author Page
-"""
 class AuthorPage(Handler):
+    """ Single Author Page
+
+    """
     def get(self, author_id):
         if not author_id:
             self.redirect("/")
@@ -477,11 +517,11 @@ class AuthorPage(Handler):
         self.render("author.html", author=author, posts=posts)
 
 
-"""
-Handler for new post submissions
-"""
-class NewPostPage(Handler):
 
+class NewPostPage(Handler):
+    """ Handler for new post submissions
+
+    """
     def get(self):
         if not self.is_logged_in():
             self.redirect("/signup")
@@ -519,6 +559,9 @@ class NewPostPage(Handler):
 
         
 class InitHandler(Handler):
+    """ This is for testing only, initializes db with sample users and posts
+
+    """
     def get(self):
 
         for user in User.all():
@@ -534,7 +577,25 @@ class InitHandler(Handler):
                "fname": "Clarence", 
                "lname": "Wendle", 
                "email": "ClarenceW@email.com", 
-               "bio": "Clarence is the main character of Clarence. Clarence's distinct perspective can transform any circumstance, however mundane, into the best day ever! His beliefs, outlook and experiences are all uniquely his own. Clarence leads with his heart, reacting to life with unfailing excitement and enthusiasm. He values his friends more than gold. In Pretty Great Day with a Girl, he is shown to be friends with everybody in Aberdale except Victor. Clarence loves everything because to Clarence, everything is amazing. He is most definitely the emotional third of this trio of friends. Despite all this, he's not very bright. It has been shown multiple times that his optimism also transforms him to a dimwit. In Average Jeff, it shown that he scored no only high crayon, he's the lowest, implying that his stupidity lead him up to this, however due to his habits and his describe stupidity.",
+
+               "bio": "Clarence is the main character of Clarence. "
+               "Clarence's distinct perspective can transform any "
+               "circumstance, however mundane, into the best day ever! "
+               "His beliefs, outlook and experiences are all uniquely his "
+               "own. Clarence leads with his heart, reacting to life "
+               "with unfailing excitement and enthusiasm. He values his "
+               "friends more than gold. In Pretty Great Day with a "
+               "Girl, he is shown to be friends with everybody in Aberdale "
+               "except Victor. Clarence loves everything because to "
+               "Clarence, everything is amazing. He is most definitely "
+               "the emotional third of this trio of friends. Despite "
+               "all this, he's not very bright. It has been shown "
+               "multiple times that his optimism also transforms "
+               "him to a dimwit. In Average Jeff, it shown that he scored "
+               "no only high crayon, he's the lowest, implying "
+               "that his stupidity lead him up to this, however due to "
+               "his habits and his describe stupidity.",
+
                "url": "https://pbs.twimg.com/profile_images/554702195220697089/kb5fWogP.jpeg"
             },
             {
@@ -543,7 +604,16 @@ class InitHandler(Handler):
                "fname": "Ryan", 
                "lname": "Sumouski", 
                "email": "RyanS@email.com", 
-               "bio": "Ryan 'Sumo' Sumouski is one of the three main protagonists (More as a deuteragonist) in Clarence. He is one of Clarence's friends. He loves to do all sorts of crazy things so that he can enjoy having fun with Clarence, Jeff, and everyone else. Like his friends, he is socially awkward. He was originally voiced by Jason Marsden in the 'Pilot,' but was replaced by Tom Kenny in the series.",
+
+               "bio": "Ryan 'Sumo' Sumouski is one of the three main "
+               "protagonists (More as a deuteragonist) in Clarence. He "
+               "is one of Clarence's friends. He loves to do all sorts "
+               "of crazy things so that he can enjoy having fun with "
+               "Clarence, Jeff, and everyone else. Like his friends, he "
+               "is socially awkward. He was originally voiced by Jason "
+               "Marsden in the 'Pilot,' but was replaced by Tom Kenny "
+               "in the series.",
+
                "url": "http://vignette4.wikia.nocookie.net/clarence/images/d/d8/Bird_Boy_Man_57.png/revision/latest?cb=20160120051349"
             },
             {
@@ -552,7 +622,13 @@ class InitHandler(Handler):
                "fname": "Jeff", 
                "lname": "Randell", 
                "email": "JeffR@email.com", 
-               "bio": "Jeff Randell is one of the three main characters in Clarence. Clarence's best friend, Jeff, is a bit of a square with a long list of phobias, but even someone as uptight as Jeff can't help but have fun when Clarence is around. He is both the tritagonist and a semi-antagonist.",
+
+               "bio": "Jeff Randell is one of the three main characters "
+               "in Clarence. Clarence's best friend, Jeff, is a bit of "
+               "a square with a long list of phobias, but even someone "
+               "as uptight as Jeff can't help but have fun when Clarence "
+               "is around. He is both the tritagonist and a semi-antagonist.",
+
                "url": "http://vignette2.wikia.nocookie.net/clarence/images/6/6c/This_is_Jeffrey_Randell_from_the_6_clock_news.png/revision/latest?cb=20150407232224"
             },
             {
@@ -561,7 +637,17 @@ class InitHandler(Handler):
                "fname": "Courage", 
                "lname": "Bagge", 
                "email": "CourageB@email.com", 
-               "bio": "Despite his signature cowardly demeanor, Courage does live up to the meaning of his name. Because of a kidnapping incident with his parents, he was abandoned as a puppy, found by Muriel, and began fearing everything. This fear is easily swallowed, however, when Muriel's safety is put into jeopardy or trouble falls upon him in general. Not only because he wishes to protect Muriel, but because the events of his most painful memory drives him to do so in fear of losing another loved one.",
+
+               "bio": "Despite his signature cowardly demeanor, Courage "
+               "does live up to the meaning of his name. Because of a "
+               "kidnapping incident with his parents, he was abandoned as "
+               "a puppy, found by Muriel, and began fearing everything. "
+               "This fear is easily swallowed, however, when Muriel's "
+               "safety is put into jeopardy or trouble falls upon him "
+               "in general. Not only because he wishes to protect "
+               "Muriel, but because the events of his most painful memory "
+               "drives him to do so in fear of losing another loved one.",
+
                "url": "http://vignette1.wikia.nocookie.net/courage/images/1/11/Courage.a.jpg/revision/latest/scale-to-width-down/310?cb=20110304185658"
             },
             {
@@ -570,23 +656,75 @@ class InitHandler(Handler):
                "fname": "Arnold", 
                "lname": "Shortman", 
                "email": "ArnoldS@email.com", 
-               "bio": "Arnold Phillip Shortman is a fictional character created by Craig Bartlett. He has featured in claymation shorts and comics, but his main role has been the main protagonist of the Nickelodeon animated television series Hey Arnold!. His head is shaped like a giant football, thus earning him the nickname \"Football Head\".",
+               
+               "bio": "Arnold Phillip Shortman is a fictional character "
+               "created by Craig Bartlett. He has featured in claymation "
+               "shorts and comics, but his main role has been the main "
+               "protagonist of the Nickelodeon animated television series "
+               "Hey Arnold!. His head is shaped like a giant football, "
+               "thus earning him the nickname \"Football Head\".",
+
                "url": "http://vignette3.wikia.nocookie.net/heyarnold/images/f/f6/Arnold.jpg/revision/latest/scale-to-width-down/200?cb=20140706192844"
             }
 
         ]
 
-        lorem_ipsums = ["Lorem ipsum dolor sit amet, pri vocent partiendo ne, in eam quis quidam ceteros, ea vim amet modo reformidans. Ludus posidonium an mea, scripta omnesque expetendis usu in, quis tation labore ne usu. Dicta essent sit et. Sea ex dicant propriae conceptam. Invenire scribentur ne pri, id elitr recteque torquatos his. Eu officiis luptatum pro.\n",
-                "Ex labores dissentias eum. Has liber vituperatoribus ea. Elit feugiat ut sed, ius mundi invidunt aliquando et. Eu democritum interesset ullamcorper nec, ei nam prodesset delicatissimi. Everti molestiae no duo, duo nusquam fierent ei, nonumes eligendi ex mei.\n",
-                "Est ad saperet definiebas scriptorem. Ex vel melius probatus ullamcorper, mel congue petentium an. Sit epicuri evertitur id, usu ea fugit altera. Cu usu option instructior. An mea vitae feugiat consequuntur, ea has dicta facilisi iudicabit. Nullam timeam an sed, no eum paulo omnesque tacimates.\n",
-                "Ius cu error nominavi, duo elit saepe causae ne. At tractatos explicari vis, esse fugit tritani pro ne. An vim rebum dictas nostrum. Est quot nominati an. Dico solum vix ei.\n",
-                "Magna virtute vix ea, rationibus constituto et eos. Decore tamquam delenit sea ei, appetere pertinax pro et. Ut qui pertinax expetenda, ad eam etiam dignissim. Ne mel malorum expetenda. Stet eirmod ad his, mei doctus pertinax ea.\n",
-                "Prompta saperet pertinacia sit no. Ei per vivendo partiendo. Ius solet delenit volutpat ex, cu augue ponderum quo. Vim zril mentitum appetere id, id ridens petentium vituperata vis.\n",
-                "Ferri principes sit ut. Ad soleat voluptua pro. Pri pericula explicari te, albucius percipit te vim. Cum tempor oblique atomorum ex, sanctus volumus mediocrem ne sed. Ad veritus consequat vel, vis cu graeco singulis facilisis.\n",
-                "Illud patrioque evertitur sit in. Ex reque sensibus efficiantur vel. Sed cu quis affert, vero prima iracundia vis cu. Mea etiam luptatum et, pri meis quando iracundia at. Meis everti ei usu, eu his choro dolorum.\n",
-                "Cu quo soluta partiendo, petentium assueverit constituam has in. Animal qualisque an eos, odio unum detracto ei vel. At his dicta utamur. No putant laboramus his, ei cum tollit delectus lucilius, et duo quaeque accusamus. Est eu consul insolens atomorum. Mel illud nusquam suscipiantur ei, per id quot adipisci. Sea te veritus vocibus incorrupte.\n",
-                "Usu in quot repudiare interesset, novum epicurei vituperatoribus et cum. Ea mei movet nullam neglegentur, fabulas saperet te eos. Qui stet oporteat indoctum no, unum nostrum deleniti ne sit. Ferri pertinax eam no, ex latine persecuti per. Ut quo luptatum gloriatur democritum.\n"
-            ]
+        lorem_ipsums = [
+            "Lorem ipsum dolor sit amet, pri vocent partiendo ne, in eam "
+            "quis quidam ceteros, ea vim amet modo reformidans. Ludus "
+            "posidonium an mea, scripta omnesque expetendis usu in, "
+            "quis tation labore ne usu. Dicta essent sit et. Sea ex dicant "
+            "propriae conceptam. Invenire scribentur ne pri, id elitr "
+            "recteque torquatos his. Eu officiis luptatum pro.\n",
+
+            "Ex labores dissentias eum. Has liber vituperatoribus ea. "
+            "Elit feugiat ut sed, ius mundi invidunt aliquando et. Eu "
+            "democritum interesset ullamcorper nec, ei nam prodesset "
+            "delicatissimi. Everti molestiae no duo, duo nusquam "
+            "fierent ei, nonumes eligendi ex mei.\n",
+
+            "Est ad saperet definiebas scriptorem. Ex vel melius probatus "
+            "ullamcorper, mel congue petentium an. Sit epicuri evertitur "
+            "id, usu ea fugit altera. Cu usu option instructior. An mea "
+            "vitae feugiat consequuntur, ea has dicta facilisi iudicabit. "
+            "Nullam timeam an sed, no eum paulo omnesque tacimates.\n",
+
+            "Ius cu error nominavi, duo elit saepe causae ne. At tractatos "
+            "explicari vis, esse fugit tritani pro ne. An vim rebum dictas "
+            "nostrum. Est quot nominati an. Dico solum vix ei.\n",
+
+            "Magna virtute vix ea, rationibus constituto et eos. Decore "
+            "tamquam delenit sea ei, appetere pertinax pro et. Ut qui "
+            "pertinax expetenda, ad eam etiam dignissim. Ne mel malorum "
+            "expetenda. Stet eirmod ad his, mei doctus pertinax ea.\n",
+
+            "Prompta saperet pertinacia sit no. Ei per vivendo partiendo. "
+            "Ius solet delenit volutpat ex, cu augue ponderum quo. Vim zril "
+            "mentitum appetere id, id ridens petentium vituperata vis.\n",
+
+            "Ferri principes sit ut. Ad soleat voluptua pro. Pri pericula "
+            "explicari te, albucius percipit te vim. Cum tempor oblique "
+            "atomorum ex, sanctus volumus mediocrem ne sed. Ad veritus "
+            "consequat vel, vis cu graeco singulis facilisis.\n",
+
+            "Illud patrioque evertitur sit in. Ex reque sensibus efficiantur "
+            "vel. Sed cu quis affert, vero prima iracundia vis cu. Mea "
+            "etiam luptatum et, pri meis quando iracundia at. Meis "
+            "everti ei usu, eu his choro dolorum.\n",
+
+            "Cu quo soluta partiendo, petentium assueverit constituam has "
+            "in. Animal qualisque an eos, odio unum detracto ei vel. At "
+            "his dicta utamur. No putant laboramus his, ei cum tollit "
+            "delectus lucilius, et duo quaeque accusamus. Est eu consul "
+            "insolens atomorum. Mel illud nusquam suscipiantur ei, per id "
+            "quot adipisci. Sea te veritus vocibus incorrupte.\n",
+
+            "Usu in quot repudiare interesset, novum epicurei "
+            "vituperatoribus et cum. Ea mei movet nullam neglegentur, "
+            "fabulas saperet te eos. Qui stet oporteat indoctum no, "
+            "unum nostrum deleniti ne sit. Ferri pertinax eam no, ex "
+            "latine persecuti per. Ut quo luptatum gloriatur democritum.\n"
+        ]
 
         imgs = [
             "https://images3.alphacoders.com/675/675273.jpg",
@@ -610,43 +748,45 @@ class InitHandler(Handler):
 
         user_ids = {}
         user_comments = {
-                            "asuser": 
-                                    [
-                                       "What's wrong with old things? Some old things are great. ",
-                                       "Hey, leave those kids alone.",
-                                       "Hey Grandpa, I've got a problem. " 
-                                    ],
-                            "cwuser": 
-                                    [
-                                        "I think that frog's dead",
-                                        "Mmmm...flavory",
-                                        "Hit the pinata"
-                                    ],
-                            "cbuser": 
-                                    [
-                                        "AAAAAAAAAAAAAAAAAAAA!", 
-                                        "Muriel, I'll save you!",
-                                        "The things I do for love."
-                                    ],
-                            "jruser": 
-                                    [
-                                        "You can't make me, I'm not moving an inch.",
-                                        "Why don't we just ask someone?",
-                                        "I was worried you guys got lost or something."
-                                    ],
-                            "rsuser": 
-                                    [
-                                        "What are you talkin' about? Pinatas are awesome.",
-                                        "Hit the pinata"
-                                    ]
-                        }
-
-
-
+            "asuser": 
+                [
+                   "What's wrong with old things? Some old things are great.",
+                   "Hey, leave those kids alone.",
+                   "Hey Grandpa, I've got a problem. " 
+                ],
+            "cwuser": 
+                [
+                    "I think that frog's dead",
+                    "Mmmm...flavory",
+                    "Hit the pinata"
+                ],
+            "cbuser": 
+                [
+                    "AAAAAAAAAAAAAAAAAAAA!", 
+                    "Muriel, I'll save you!",
+                    "The things I do for love."
+                ],
+            "jruser": 
+                [
+                    "You can't make me, I'm not moving an inch.",
+                    "Why don't we just ask someone?",
+                    "I was worried you guys got lost or something."
+                ],
+            "rsuser": 
+                [
+                    "What are you talkin' about? Pinatas are awesome.",
+                    "Hit the pinata"
+                ]
+        }
 
         # create users
         for user_dict in users_dicts:
-            user = User.register(user_dict["username"], user_dict["fname"], user_dict["lname"], user_dict["pw"], user_dict["email"])
+            user = User.register(user_dict["username"], 
+                                 user_dict["fname"], 
+                                 user_dict["lname"], 
+                                 user_dict["pw"], 
+                                 user_dict["email"])
+
             response = urlopen(user_dict["url"])
             img = response.read()
             avatar_image = images.resize(img, 150, 150, crop_to_fit=True)
@@ -659,7 +799,9 @@ class InitHandler(Handler):
         # create posts
         for _ in range(random.randint(15, 25)):
             title = titles[random.randint(0, 7)]
-            content = '\n'.join([lorem_ipsums[random.randint(0, 9)] for x in range(random.randint(3, 10))])
+            content = '\n'.join([lorem_ipsums[random.randint(0, 9)] 
+                                 for x in range(random.randint(3, 10))])
+
             img_url = random.randint(0, 5)
             response = urlopen(imgs[img_url])
             header_img = response.read()
@@ -679,14 +821,18 @@ class InitHandler(Handler):
             post.put()
 
             # likes and comments
-            users_who_like = random.sample(user_ids.keys(), random.randint(0, 5))
+            users_who_like = random.sample(user_ids.keys(), 
+                                           random.randint(0, 5))
+
             for key in users_who_like:
                 post.like(user_ids[key])
-                post.add_comment(int(user_ids[key]), random.choice(user_comments[key]))
+                post.add_comment(int(user_ids[key]), 
+                                     random.choice(user_comments[key]))
+
             post.put()
 
 
-
+# routing
 app = webapp2.WSGIApplication([('/', MainPage),
                                ('/newpost', NewPostPage),
                                ('/postimg', PostImageHandler),
