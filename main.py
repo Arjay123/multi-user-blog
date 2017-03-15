@@ -1,29 +1,29 @@
+import hashlib
+import hmac
 import os
+import time
+import random
+import re
 import jinja2
 import webapp2
-import re
-import hmac
-import random
-import hashlib
-import time
-from random import randint
+from string import letters
 from urllib import urlopen
+
+from google.appengine.api import images
+from google.appengine.ext import db
+from google.appengine.ext import blobstore
+from google.appengine.ext.webapp import blobstore_handlers
+
 from models.user import User
 from models.post import Post
 from models.postphoto import PostPhoto
-from string import letters
-from google.appengine.ext import db
-from google.appengine.ext import blobstore
-from google.appengine.api import images
-
-from google.appengine.ext.webapp import blobstore_handlers
 
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), 
                                autoescape=True)
 
-secret = "imsosecret"
+secret = "TMnhG42cnYMCjWcB"
 USER_COOKIE_KEY = "user"
 
 
@@ -657,10 +657,10 @@ class InitHandler(Handler):
             user_ids[user.username] = user.key().id()
 
         # create posts
-        for _ in range(randint(15, 25)):
-            title = titles[randint(0, 7)]
-            content = '\n'.join([lorem_ipsums[randint(0, 9)] for x in range(randint(3, 10))])
-            img_url = randint(0, 5)
+        for _ in range(random.randint(15, 25)):
+            title = titles[random.randint(0, 7)]
+            content = '\n'.join([lorem_ipsums[random.randint(0, 9)] for x in range(random.randint(3, 10))])
+            img_url = random.randint(0, 5)
             response = urlopen(imgs[img_url])
             header_img = response.read()
             author_id = user_ids[random.choice(user_ids.keys())]
@@ -679,7 +679,7 @@ class InitHandler(Handler):
             post.put()
 
             # likes and comments
-            users_who_like = random.sample(user_ids.keys(), randint(0, 5))
+            users_who_like = random.sample(user_ids.keys(), random.randint(0, 5))
             for key in users_who_like:
                 post.like(user_ids[key])
                 post.add_comment(int(user_ids[key]), random.choice(user_comments[key]))
