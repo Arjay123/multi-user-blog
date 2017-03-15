@@ -57,14 +57,14 @@
 <script>
 
 	//Set values of modal form from button that triggered the modal
-	$('#confirmModal').on('show.bs.modal', function (event) {
+	$("#confirmModal").on("show.bs.modal", function (event) {
 	  var button = $(event.relatedTarget) // Button that triggered the modal
-	  var id = button.data('id') // Extract info from data-* attributes
-	  var title = button.data('post-title')
+	  var id = button.data("id") // Extract info from data-* attributes
+	  var title = button.data("post-title")
 
 	  var modal = $(this)
-	  modal.find('.modal-post-title').text('Confirm deletion of "' + title + '"')
-	  modal.find('.modal-post-id').val(id)
+	  modal.find(".modal-post-title").text("Confirm deletion of \"" + title + "\"")
+	  modal.find(".modal-post-id").val(id)
 	})
 
 </script>

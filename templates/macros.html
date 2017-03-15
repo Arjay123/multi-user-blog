@@ -112,11 +112,11 @@
 <script src="https://npmcdn.com/imagesloaded@4.1/imagesloaded.pkgd.min.js"></script>
 
 <script>
-var $grid = $('.posts').imagesLoaded(function() {
+var $grid = $(".posts").imagesLoaded(function() {
   // init Masonry after all images have loaded
   $grid.isotope({
-    itemSelector: '.post',
-    layoutMode: 'fitRows'
+    itemSelector: ".post",
+    layoutMode: "fitRows"
   });
 });
 

@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head>
+	<head>
 
-	<meta name="viewport" content="width=device-width initial-scale=1.0">
-	<title>Blog Title</title>
-	
-	<!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-	<link rel="stylesheet" href="/css/style.css">
-	<script src="https://use.fontawesome.com/139a6099b5.js"></script>
-	
-</head>
-<body>
+		<meta name="viewport" content="width=device-width initial-scale=1.0">
+		<title>Blog Title</title>
+		
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<link rel="stylesheet" href="/css/style.css">
+		<script src="https://use.fontawesome.com/139a6099b5.js"></script>
+		
+	</head>
+	<body>
 
-	<header class="blog-header">
-		<nav class="navbar" role="navigation">
-			<div class="container-fluid">
-				<!-- Brand and toggle get grouped for better mobile display -->
-				<div class="navbar-header">
-					{% if user %}
-					<div id="dropdown-menu" class="pull-left pull-center user-menu">
-						<button class="btn blog-header dropdown-toggle pull-center" type="button" id="dropdown-menu"
-						data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+		<header class="blog-header">
+			<nav class="navbar" role="navigation">
+				<div class="container-fluid">
+					<!-- Brand and toggle get grouped for better mobile display -->
+					<div class="navbar-header">
+
+						{% if user %}
+
+						<div id="dropdown-menu" class="pull-left pull-center user-menu">
+							<button class="btn blog-header dropdown-toggle pull-center" type="button" id="dropdown-menu"
+							data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 							Hello, {{user.first_name}} <span class="caret"></span>
 						</button>
 
@@ -32,68 +34,71 @@
 						</ul>
 
 					</div>
+
 					{% else %}
+
 					<div class="navbar-brand">
-					<a class="nav-link" href="/signup">Login/Signup</a></div>
+						<a class="nav-link" href="/signup">Login/Signup</a></div>
 
-					{% endif %}
-					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-						<span class="sr-only">Toggle navigation</span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-				</div>
+						{% endif %}
+						
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+					</div>
 					
-				<!-- Collect the nav links, forms, and other content for toggling -->
-				<div class="collapse navbar-collapse navbar-ex1-collapse">
+					<!-- Collect the nav links, forms, and other content for toggling -->
+					<div class="collapse navbar-collapse navbar-ex1-collapse">
 
-					<ul class="nav navbar-nav navbar-right pull-right">
-						<li class="active"><a class="nav-link" href="/">Home</a></li>
-						<li><a class="nav-link" href="/authors">Authors</a></li>
-					</ul>
+						<ul class="nav navbar-nav navbar-right pull-right">
+							<li class="active"><a class="nav-link" href="/">Home</a></li>
+							<li><a class="nav-link" href="/authors">Authors</a></li>
+						</ul>
+					</div>
+					<!-- /.navbar-collapse -->
 				</div>
-				<!-- /.navbar-collapse -->
-			</div>
-		</nav>
+			</nav>
 
-		<div class="container">
-			<div class="row row-eq-height">
-				<div class="col-xs-10 col-xs-offset-1 text-center">
-					<div class="row blog-title">
-						<h1>Blog Title</h1>
-						<h4>Subtitle subtitle subtitle subtitle</h4>
+			<div class="container">
+				<div class="row row-eq-height">
+					<div class="col-xs-10 col-xs-offset-1 text-center">
+						<div class="row blog-title">
+							<h1>Blog Title</h1>
+							<h4>Subtitle subtitle subtitle subtitle</h4>
+						</div>
 					</div>
 				</div>
 			</div>
+		</header>
+
+		<div class="container content">
+			{% block content %}
+			{% endblock %}
 		</div>
-	</header>
 
-	<div class="container content">
-		{% block content %}
-		{% endblock %}
-	</div>
-
-	<footer class="blog-footer">
-		<div class="container">
-			<div class="row">
-				<div class="col-xs-10 col-xs-offset-1 text-center">
-					<a class="footer-link" href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a>
-					<a class="footer-link" href="#"><i class="fa fa-facebook-official" aria-hidden="true"></i></a>
-					<a class="footer-link" href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+		<footer class="blog-footer">
+			<div class="container">
+				<div class="row">
+					<div class="col-xs-10 col-xs-offset-1 text-center">
+						<a class="footer-link" href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a>
+						<a class="footer-link" href="#"><i class="fa fa-facebook-official" aria-hidden="true"></i></a>
+						<a class="footer-link" href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+					</div>
 				</div>
 			</div>
-		</div>
-	</footer>
+		</footer>
 
-	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 
-    <!-- Latest compiled and minified JavaScript -->
-	<script src="https://maxcdn.bootstrapc	dn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapc	dn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-	{% block scripts %}
+		{% block scripts %}
 
-	{% endblock %}
-</body>
+		{% endblock %}
+	</body>
 </html>
