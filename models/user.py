@@ -2,8 +2,6 @@ import hashlib
 import random
 from google.appengine.api import images
 from google.appengine.ext import db
-from security_helper import make_pw_hash
-from security_helper import make_salt
 from string import letters
 
 
