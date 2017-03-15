@@ -19,16 +19,16 @@
 				<!-- Brand and toggle get grouped for better mobile display -->
 				<div class="navbar-header">
 					{% if user %}
-					<div class="pull-left pull-center user-menu">
+					<div id="dropdown-menu" class="pull-left pull-center user-menu">
 						<button class="btn blog-header dropdown-toggle pull-center" type="button" id="dropdown-menu"
 						data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 							Hello, {{user.first_name}} <span class="caret"></span>
 						</button>
 
 						<ul class="dropdown-menu" arialabelled-by="dropdown-menu">
-							<li><a href="/postlist">View your posts</a></li>
-							<li><a href="/user">Settings</a></li>
-							<li><a href="/logout">Logout</a></li>
+							<li><a class="dropdown-menu-link" href="/postlist">View your posts</a></li>
+							<li><a class="dropdown-menu-link" href="/user">Settings</a></li>
+							<li><a class="dropdown-menu-link" href="/logout">Logout</a></li>
 						</ul>
 
 					</div>
