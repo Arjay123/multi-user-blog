@@ -541,13 +541,14 @@ class NewPostPage(Handler):
                          content, 
                          self.user.key().id(), 
                          header_image_original)
+
         self.redirect("/post/%s" % str(post.key().id()))
 
 
         
 class InitHandler(Handler):
     """ This is for testing only, initializes db with sample users and posts
-
+        Remove when in production
     """
     def get(self):
 
