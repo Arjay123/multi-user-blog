@@ -197,11 +197,9 @@ class EditPostPage(Handler):
             new_header_image = self.request.get("img")
             submit = False
 
-            # TODO - add valid checks?
             if new_title:
                 submit=True
                 post.title = new_title
-
 
             if new_content:
                 submit=True
@@ -234,7 +232,7 @@ class DeletePostHandler(Handler):
 
                 post.delete()
  
-                # this feels hacky, but it prevents the post list from loading
+                # this feels hacky, but it prevents the page from loading
                 # before the post is deleted
                 time.sleep(2)
 
@@ -248,6 +246,7 @@ class UserPage(UserSettingsHandler):
     def get(self):
         self.render("user.html")
 
+
     def post(self):
         first_name = self.request.get("first_name")
         last_name = self.request.get("last_name")
@@ -257,28 +256,35 @@ class UserPage(UserSettingsHandler):
         img = self.request.get("img")
         bio = self.request.get("bio")
 
+        valid = True
+        pw_error = ""
+        confirm_pw_error = ""
 
-        # todo add valid checks?
-        if first_name:
-            self.user.first_name = first_name
+        if password:
+            if password != confirm_pw:
+                valid = False
+                confirm_pw_error = "Passwords do not match"
+            elif not self.valid_password(password):
+                valid = False
+                pw_error = "Invalid password"
+            else:
+                self.user.change_password(password)
 
-        if last_name:
-            self.user.last_name = last_name
+        if valid:
+            settings = {
+                "first_name": first_name,
+                "last_name": last_name,
+                "password": password,
+                "email": email,
+                "img": img,
+                "bio": bio
+            }
 
-        if password and valid_password(password):
-            pass
+            self.user.change_user_settings(**settings)
 
-        if email:
-            self.user.email = email
-
-        if img:
-            pass
-
-        if bio:
-            self.user.bio = bio
-
-        self.user.put()
-        self.render("user.html")
+        self.render("user.html", 
+                    pw_error=pw_error, 
+                    confirm_pw_error=confirm_pw_error)
 
 
 class LogoutPage(Handler):
@@ -301,6 +307,7 @@ class SignupPage(UserSettingsHandler):
             return
 
         self.render("signup.html")
+
 
     def post(self):
 
@@ -451,8 +458,7 @@ class PostPage(Handler):
     """
     def get(self, post_id):
         if post_id and post_id.isdigit():
-            key = db.Key.from_path('Post', int(post_id))
-            post = db.get(key)
+            post = Post.get_by_id(post_id)
 
             if post:
                 post.inc_views()
@@ -464,10 +470,10 @@ class PostPage(Handler):
             else:
                 self.redirect("/")
 
+
     def post(self, post_id):
         if post_id and post_id.isdigit():
-            key = db.Key.from_path('Post', int(post_id))
-            post = db.get(key)
+            post = Post.get_by_id(post_id)
 
             if post:
                 submit = self.request.get("submit")
@@ -546,7 +552,7 @@ class NewPostPage(Handler):
             self.render("newpost.html", **params)
             return
 
-        
+
         # create post object
         post = Post(title=title, 
                     content=content, 
@@ -656,7 +662,7 @@ class InitHandler(Handler):
                "fname": "Arnold", 
                "lname": "Shortman", 
                "email": "ArnoldS@email.com", 
-               
+
                "bio": "Arnold Phillip Shortman is a fictional character "
                "created by Craig Bartlett. He has featured in claymation "
                "shorts and comics, but his main role has been the main "
@@ -798,12 +804,11 @@ class InitHandler(Handler):
 
         # create posts
         for _ in range(random.randint(15, 25)):
-            title = titles[random.randint(0, 7)]
-            content = '\n'.join([lorem_ipsums[random.randint(0, 9)] 
+            title = random.choice(titles)
+            content = '\n'.join([random.choice(lorem_ipsums) 
                                  for x in range(random.randint(3, 10))])
 
-            img_url = random.randint(0, 5)
-            response = urlopen(imgs[img_url])
+            response = urlopen(random.choice(imgs))
             header_img = response.read()
             author_id = user_ids[random.choice(user_ids.keys())]
 

@@ -93,6 +93,45 @@ class User(db.Model):
             return u
 
 
+    def change_user_settings(self, 
+                             first_name, 
+                             last_name,
+                             password, 
+                             email, 
+                             img, 
+                             bio):
+
+        if first_name:
+            self.first_name = first_name
+
+        if last_name:
+            self.last_name = last_name
+
+        if password:
+            self.change_password(password)
+
+        if email:
+            self.email = email
+
+        if img:
+            self.change_user_image(img)
+
+        if bio:
+            self.bio = bio
+
+        self.put()
+
+
+    def change_user_image(self, img):
+        print "change image"
+        avatar_image = images.resize(img, 150, 150, crop_to_fit=True)
+        self.avatar_image = avatar_image
+
+
+    def change_password(self, new_pw):
+        self.pw_hash = make_pw_hash(self.username, new_pw)
+
+
     def get_full_name(self):
         """ Returns first + last name concatenated
 
