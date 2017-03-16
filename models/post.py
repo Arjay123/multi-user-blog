@@ -36,6 +36,28 @@ class Post(db.Model):
     comment_num = db.IntegerProperty(default=0)
 
 
+    @classmethod
+    def create_post(cls, title, content, author_id, img):
+        """ Create post
+        
+        Creates post object w/ snippet and header images
+
+        Args:
+            title - title of post
+            content - post body
+            author_id - id of author
+            img - img to be resized for header images
+        """
+        post = Post(title=title, 
+                    content=content, 
+                    author_id=author_id)
+
+        post.change_header_image(img)
+        post.create_snippet()
+
+        post.put()
+
+
     def get_comments(self):
         """ Gets all comments associated with this post
 

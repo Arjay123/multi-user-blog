@@ -211,6 +211,7 @@ class EditPostPage(Handler):
 
             if submit:
                 post.put()
+
             self.render("editpost.html", post=post)
 
 
@@ -550,15 +551,12 @@ class NewPostPage(Handler):
             return
 
 
-        # create post object
-        post = Post(title=title, 
-                    content=content, 
-                    author_id=self.user.key().id())
+        # create post
+        Post.create_post(title, 
+                         content, 
+                         self.user.key().id(), 
+                         header_image_original)
 
-        post.change_header_image(header_image_original)
-        post.create_snippet()
-
-        post.put()
 
         
 class InitHandler(Handler):
