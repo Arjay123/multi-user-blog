@@ -318,7 +318,6 @@ class SignupPage(UserSettingsHandler):
 
             retry_params = {
                 "login_username": username,
-                "login_signup": False
             }
 
             if not (username and password):
@@ -385,32 +384,30 @@ class SignupPage(UserSettingsHandler):
             # if any params invalid, reload signup page w/ previous values
             if not valid:
                 self.render("signup.html", **retry_params)
-
-            else:
-
-                # check if username used, reload signup page
-                if User.username_in_use(username):
-                    retry_params["username_error"] = "Username in use"
-                    self.render("signup.html", **retry_params)
-                    print(User.username_in_use(username))
-                    return
+                return
 
 
-                user = User.register(username, 
-                                     first_name, 
-                                     last_name, 
-                                     password, 
-                                     email)
+            # check if username used, reload signup page
+            if User.username_in_use(username):
+                retry_params["username_error"] = "Username in use"
+                self.render("signup.html", **retry_params)
+                print(User.username_in_use(username))
+                return
 
-                avatar_image = self.request.get("img")
-                if avatar_image:
-                    avatar_image = images.resize(avatar_image, 150, 150, crop_to_fit=True)
-                    user.avatar_image = avatar_image
 
-                user.put()
+            user = User.register(username, 
+                                 first_name, 
+                                 last_name, 
+                                 password, 
+                                 email)
 
-                self.set_cookie(USER_COOKIE_KEY, str(user.key().id()))
-                self.redirect("/user")
+            avatar_image = self.request.get("img")
+            if avatar_image:
+                user.change_user_settings(img=avatar_image)
+
+                
+            self.login(str(user.key().id()))
+            self.redirect("/user")
 
 
 class UserImageHandler(Handler):

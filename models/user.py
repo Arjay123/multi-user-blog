@@ -94,12 +94,12 @@ class User(db.Model):
 
 
     def change_user_settings(self, 
-                             first_name, 
-                             last_name,
-                             password, 
-                             email, 
-                             img, 
-                             bio):
+                             first_name=None, 
+                             last_name=None,
+                             password=None, 
+                             email=None, 
+                             img=None, 
+                             bio=None):
 
         if first_name:
             self.first_name = first_name
