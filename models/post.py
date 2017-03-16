@@ -80,15 +80,22 @@ class Post(db.Model):
             self.put()
 
 
+    def user_can_like(self, author_id):
+        """ Returns if user is allowed to like the post 
+
+        """
+        return author_id != self.author_id
+
+
     def like(self, author_id):
         """ Adds a user to list of users who like this post
         
-        User is not added if they are already in the list
+        User is not added if they are already in the list or the author
 
         Args: 
             author_id - user_id
         """
-        if not self.user_liked(author_id):
+        if self.user_can_like(author_id) and not self.user_liked(author_id):
             self.likes.append(author_id)
 
 

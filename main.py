@@ -405,7 +405,7 @@ class SignupPage(UserSettingsHandler):
             if avatar_image:
                 user.change_user_settings(img=avatar_image)
 
-                
+
             self.login(str(user.key().id()))
             self.redirect("/user")
 
@@ -455,7 +455,7 @@ class PostPage(Handler):
     """
     def get(self, post_id):
         if post_id and post_id.isdigit():
-            post = Post.get_by_id(post_id)
+            post = Post.get_by_id(int(post_id))
 
             if post:
                 post.inc_views()
@@ -470,7 +470,7 @@ class PostPage(Handler):
 
     def post(self, post_id):
         if post_id and post_id.isdigit():
-            post = Post.get_by_id(post_id)
+            post = Post.get_by_id(int(post_id))
 
             if post:
                 submit = self.request.get("submit")

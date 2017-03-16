@@ -28,7 +28,7 @@
 	</div>
 </div>
 
-{% if user %}
+{% if user and post.user_can_like(user.key().id()) %}
 <div class="row">
 	<div class="col-xs-10 col-xs-offset-1">
 		<form method="post">
