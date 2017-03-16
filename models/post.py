@@ -56,6 +56,7 @@ class Post(db.Model):
         post.create_snippet()
 
         post.put()
+        return post
 
 
     def edit_post(self, new_title, new_content, new_image):
@@ -130,11 +131,11 @@ class Post(db.Model):
             self.put()
 
 
-    def user_can_like(self, author_id):
-        """ Returns if user is allowed to like the post 
+    def user_is_author(self, author_id):
+        """ Returns if user is the author of the post 
 
         """
-        return author_id != self.author_id
+        return author_id == self.author_id
 
 
     def like(self, author_id):
@@ -145,7 +146,7 @@ class Post(db.Model):
         Args: 
             author_id - user_id
         """
-        if self.user_can_like(author_id) and not self.user_liked(author_id):
+        if not self.user_is_author(author_id) and not self.user_liked(author_id):
             self.likes.append(author_id)
 
 

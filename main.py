@@ -537,10 +537,11 @@ class NewPostPage(Handler):
             return
 
         # create post
-        Post.create_post(title, 
+        post = Post.create_post(title, 
                          content, 
                          self.user.key().id(), 
                          header_image_original)
+        self.redirect("/post/%s" % str(post.key().id()))
 
 
         

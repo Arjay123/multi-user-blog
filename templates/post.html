@@ -28,22 +28,36 @@
 	</div>
 </div>
 
-{% if user and post.user_can_like(user.key().id()) %}
-<div class="row">
-	<div class="col-xs-10 col-xs-offset-1">
-		<form method="post">
-			{% if user_liked %}
-			<button type="submit" name="submit" value="unlike" class="btn btn-default pull-right">
-				<i class="fa fa-thumbs-down" aria-hidden="true"></i>Unlike this post
-			</button>
-			{% else %}
-			<button type="submit" name="submit" value="like" class="btn btn-default pull-right">
-				<i class="fa fa-thumbs-up" aria-hidden="true"></i>Like this post
-			</button>
-			{% endif %}
-		</form>
+{% if user %}
+
+	{% if post.user_is_author(user.key().id()) %}
+	
+	<div class="row">
+		<div class="col-xs-10 col-xs-offset-1">
+			<a href="/edit/{{post.key().id()}}">Edit this post</a>
+		</div>
 	</div>
-</div>
+
+	{% else %}
+
+	<div class="row">
+		<div class="col-xs-10 col-xs-offset-1">
+			<form method="post">
+				{% if user_liked %}
+				<button type="submit" name="submit" value="unlike" class="btn btn-default pull-right">
+					<i class="fa fa-thumbs-down" aria-hidden="true"></i>Unlike this post
+				</button>
+				{% else %}
+				<button type="submit" name="submit" value="like" class="btn btn-default pull-right">
+					<i class="fa fa-thumbs-up" aria-hidden="true"></i>Like this post
+				</button>
+				{% endif %}
+			</form>
+		</div>
+	</div>
+
+	{% endif %}
+
 {% endif %}
 <hr>
 <div class="row comments-hdr">
