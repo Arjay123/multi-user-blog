@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% from "macros.html" import post_stats %}
 
+{% block title %}Post{% endblock %}
 {% block content %}
 
 <div class="row">
@@ -31,7 +32,7 @@
 {% if user %}
 
 	{% if post.user_is_author(user.key().id()) %}
-	
+
 	<div class="row">
 		<div class="col-xs-10 col-xs-offset-1">
 			<a href="/edit/{{post.key().id()}}">Edit this post</a>

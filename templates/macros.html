@@ -64,12 +64,16 @@
 {% macro post_thumb(post) %}
 <div class="post grid-item col-xs-12 col-sm-6 col-md-4">
 	<div class="row post-summary-header">
-		<img class="col-xs-12 img-responsive post-image" src="/postimg?img_id={{post.header_image_thumb}}">
+		<picture class="col-xs-12">
+			<source media="(min-width: 375px) and (max-width: 768px)" srcset="/postimg?img_id={{post.header_image_small}} 1x">
+			<img class="center-block post-image img-responsive" src="/postimg?img_id={{post.header_image_thumb}}">
+		</picture>
+
 		<div class="col-xs-12 post-summary-title"><h3>{{post.title}}</h3></div>
 	</div>
-	<div class="row post-summary-info">
-			<div class="col-xs-6 post-author"><h6>{{post.get_author_name()}}</h6></div>
-			<div class="col-xs-6 text-right post-stats">
+	<div class="row row-eq-height post-summary-info">
+			<div class="col-xs-4 post-author"><h6>{{post.get_author_name()}}</h6></div>
+			<div class="col-xs-8 pull-center text-right post-stats">
 
 				{{ post_stats(post.comment_num, post.likes | length, post.views) }}
 

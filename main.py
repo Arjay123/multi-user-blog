@@ -432,7 +432,7 @@ class MainPage(Handler):
 
     """
     def get(self):
-        posts = Post.all().order('-created')
+        posts = Post.all().order('-created').run(limit=9)
         self.render("blog.html", posts=posts)
 
 
@@ -506,6 +506,13 @@ class AuthorPage(Handler):
         posts = Post.gql("WHERE author_id=%s ORDER BY created DESC" % str(author.key().id()))
         self.render("author.html", author=author, posts=posts)
 
+
+class AboutPage(Handler):
+    """ About page
+
+    """
+    def get(self):
+        self.render("about.html")
 
 
 class NewPostPage(Handler):
@@ -833,4 +840,5 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/edit/([0-9]+)', EditPostPage),
                                ('/authors', AuthorsPage),
                                ('/author/([0-9]+)', AuthorPage),
-                               ('/init', InitHandler)])
+                               ('/init', InitHandler),
+                               ('/about', AboutPage)])
