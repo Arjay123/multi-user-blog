@@ -195,22 +195,8 @@ class EditPostPage(Handler):
             new_title = self.request.get("title")
             new_content = self.request.get("content")
             new_header_image = self.request.get("img")
-            submit = False
 
-            if new_title:
-                submit=True
-                post.title = new_title
-
-            if new_content:
-                submit=True
-                post.content = new_content
-
-            if new_header_image:
-                submit=True
-                post.change_header_image(new_header_image)
-
-            if submit:
-                post.put()
+            post.edit_post(new_title, new_content, new_header_image)
 
             self.render("editpost.html", post=post)
 
@@ -549,7 +535,6 @@ class NewPostPage(Handler):
         if not (title or content or header_image_original):
             self.render("newpost.html", **params)
             return
-
 
         # create post
         Post.create_post(title, 

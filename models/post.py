@@ -58,6 +58,34 @@ class Post(db.Model):
         post.put()
 
 
+    def edit_post(self, new_title, new_content, new_image):
+        """ Edit post
+        
+        Post only pushes to datastore if any attributes have changed
+
+        Args:
+            new_title - new title 
+            new_content - new body
+            new_image - new header image
+        """
+        submit = False
+
+        if new_title:
+            submit=True
+            self.title = new_title
+
+        if new_content:
+            submit=True
+            self.content = new_content
+
+        if new_image:
+            submit=True
+            self.change_header_image(new_image)
+
+        if submit:
+            self.put()
+
+
     def get_comments(self):
         """ Gets all comments associated with this post
 
