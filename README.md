@@ -26,3 +26,8 @@ From within the multi-user-blog directory, use the command " dev_appserver.py ."
 ## Screenshot of homepage
 
 ![Completed webpage](screenshot.png)
+
+
+# URL
+
+Blog is viewable at this url: https://an-udacity-mu-blog.appspot.com/
