@@ -35,6 +35,8 @@ def render_str(template, **params):
 
     Returns:
         Rendered template as string w/ params included
+
+    This code was taken from Udacity's Full Stack Engineering course
     """
     t = jinja_env.get_template(template)
     return t.render(params)
@@ -49,6 +51,7 @@ class Handler(webapp2.RequestHandler):
     def write(self, *a, **kw):
         """ Writes template to response
             
+            This code was taken from Udacity's Full Stack Engineering course
         """
         self.response.out.write(*a, **kw)
 
@@ -57,7 +60,8 @@ class Handler(webapp2.RequestHandler):
         """ 
         before rendering the template, gets stored user object
         and passes to page params
-
+        
+        This code was taken from Udacity's Full Stack Engineering course
         """
         params['user'] = self.user
         return render_str(template, **params)
@@ -66,7 +70,8 @@ class Handler(webapp2.RequestHandler):
     def render(self, template, **kw):
         """ Calls render str to convert template to string format and
         writes to response
-
+        
+        This code was taken from Udacity's Full Stack Engineering course
         """
         self.write(self.render_str(template, **kw))
 
@@ -80,6 +85,8 @@ class Handler(webapp2.RequestHandler):
 
         Returns:
             str containing value and hashed value separated by |
+
+        This code was taken from Udacity's Full Stack Engineering course
         """
         return '%s|%s' % (val, hmac.new(secret, val).hexdigest())
 
@@ -90,6 +97,8 @@ class Handler(webapp2.RequestHandler):
         the requesting user
 
         return: cookie value if valid, else None
+
+        This code was taken from Udacity's Full Stack Engineering course
         """
         val = secure_val.split('|')[0]
         if secure_val == self.make_secure_val(val):
@@ -98,7 +107,8 @@ class Handler(webapp2.RequestHandler):
     
     def set_cookie(self, name, value):
         """  sets cookie value
-
+        
+        This code was taken from Udacity's Full Stack Engineering course
         """
         h = self.make_secure_val(value)
         self.response.headers.add_header('Set-Cookie', 
@@ -107,7 +117,8 @@ class Handler(webapp2.RequestHandler):
     
     def get_cookie(self, name):
         """ Returns cookie value if valid
-
+        
+        This code was taken from Udacity's Full Stack Engineering course
         """
         cookie_val = self.request.cookies.get(name)
         return cookie_val and self.check_secure_val(cookie_val)
@@ -117,6 +128,8 @@ class Handler(webapp2.RequestHandler):
         """
         called before loading page, if user is logged in, gets user from db
         using the id stored in USER_COOKIE_KEY cookie
+
+        This code was taken from Udacity's Full Stack Engineering course
         """
         webapp2.RequestHandler.initialize(self, *a, **kw)
         uid = self.get_cookie(USER_COOKIE_KEY)
