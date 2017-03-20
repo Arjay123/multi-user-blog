@@ -9,6 +9,7 @@ import webapp2
 import decorators
 from string import letters
 from urllib import urlopen
+from PIL import Image
 
 from google.appengine.api import images
 from google.appengine.ext import db
@@ -411,30 +412,22 @@ class UserImageHandler(Handler):
     """ Handler for rendering user avatar images stored as BlobProperty values
 
     """
-    def get(self):
-        img_id = self.request.get("img_id")
-        if img_id and img_id.isdigit():
+    @decorators.user_exists
+    @decorators.user_img_exists
+    def get(self, img):
+        self.response.headers["Content-Type"] = "image/jpeg"
+        self.response.out.write(img)
 
-            user = User.get_by_id(int(img_id))
-            
-            if user and user.avatar_image:
-                self.response.headers["Content-Type"] = "image/jpeg"
-                self.response.out.write(user.avatar_image)
 
 
 class PostImageHandler(Handler):
     """ Handler for rendering post header images stored as BlobProperty values
     
     """
-    def get(self):
-        img_id = self.request.get("img_id")
-        if img_id and img_id.isdigit():
-
-            photo = PostPhoto.get_by_id(int(img_id))
-            
-            if photo and photo.image:
-                self.response.headers["Content-Type"] = "image/jpeg"
-                self.response.out.write(photo.image)
+    @decorators.post_img_exists
+    def get(self, photo):
+        self.response.headers["Content-Type"] = "image/jpeg"
+        self.response.out.write(photo.image)
 
 
 class MainPage(Handler):
@@ -847,8 +840,8 @@ class InitHandler(Handler):
 # routing
 app = webapp2.WSGIApplication([('/', MainPage),
                                ('/newpost', NewPostPage),
-                               ('/postimg', PostImageHandler),
-                               ('/userimg', UserImageHandler),
+                               ('/postimg/([0-9]+)', PostImageHandler),
+                               ('/userimg/([0-9]+)', UserImageHandler),
                                ('/signup', SignupPage),
                                ('/user', UserPage),
                                ('/logout', LogoutPage),

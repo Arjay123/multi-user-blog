@@ -8,9 +8,9 @@
 	<div class="col-xs-10 col-xs-offset-1">
 		<div class="row post-summary-header">
 			<picture class="col-xs-12">
-				<source media="(min-width: 768px)" srcset="/postimg?img_id={{post.header_image_med}} 1x, /postimg?img_id={{post.header_image_large}} 2x">
-				<source media="(min-width: 375px)" srcset="/postimg?img_id={{post.header_image_small}} 1x, /postimg?img_id={{post.header_image_med}} 2x">
-				<img class="center-block post-image img-responsive" src="/postimg?img_id={{post.header_image_thumb}}">
+				<source media="(min-width: 768px)" srcset="/postimg/{{post.header_image_med}} 1x, /postimg/{{post.header_image_large}} 2x">
+				<source media="(min-width: 375px)" srcset="/postimg/{{post.header_image_small}} 1x, /postimg/{{post.header_image_med}} 2x">
+				<img class="center-block post-image img-responsive" src="/postimg/{{post.header_image_thumb}}">
 			</picture>
 			<div class="col-xs-12 post-summary-title"><h3>{{post.title}}</h3></div>
 		</div>
@@ -75,7 +75,7 @@
 	
 		<div class="row comment">
 			<div class="hidden-xs col-sm-2">
-				<img class="img-responsive center-block img-circle" src="/userimg?img_id={{comment.user_id}}">
+				<img class="img-responsive center-block img-circle" src="/userimg/{{comment.user_id}}">
 			</div>
 			<div class="col-xs-12 col-sm-10">
 				<h4>{{comment.get_user_name()}}</h4>

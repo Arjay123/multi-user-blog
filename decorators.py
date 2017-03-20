@@ -112,6 +112,42 @@ def user_exists(function):
     return wrapper
 
 
+def user_img_exists(function):
+    """ Check if user image exists
+    
+    If user image exists, return image
+    else, 404 error
+    """
+    @wraps(function)
+    def wrapper(self, user):
+        if user.avatar_image:
+            return function(self, img=user.avatar_image)
+        else:
+            print "no image"
+            self.error(404)
+            return
+    return wrapper
+
+
+def post_img_exists(function):
+    """ Check if post image exists
+
+    If post image exists, return image
+    else, 404 error
+    """
+    @wraps(function)
+    def wrapper(self, img_id):
+        key = db.Key.from_path("PostPhoto", int(img_id))
+        photo = db.get(key)
+        if photo:
+            return function(self, photo=photo)
+        else:
+            print "no imager post"
+            self.error(404)
+            return
+    return wrapper
+
+
 def user_owns_comment(function):
     """ Check if user owns comment
 
@@ -154,6 +190,9 @@ def comment_exists(function):
             self.error(404)
             return
     return wrapper
+
+
+
 
 
 

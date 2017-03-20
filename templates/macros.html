@@ -24,9 +24,9 @@
 
 			<div class="row post-full-header">
 				<picture class="col-xs-12">
-					<source media="(min-width: 768px)" srcset="/postimg?img_id={{post.header_image_med}} 1x, /postimg?img_id={{post.header_image_large}} 2x">
-					<source media="(min-width: 375px)" srcset="/postimg?img_id={{post.header_image_small}} 1x, /postimg?img_id={{post.header_image_med}} 2x">
-					<img class="center-block post-image img-responsive" src="/postimg?img_id={{post.header_image_thumb}}">
+					<source media="(min-width: 768px)" srcset="/postimg/{{post.header_image_med}} 1x, /postimg/{{post.header_image_large}} 2x">
+					<source media="(min-width: 375px)" srcset="/postimg/{{post.header_image_small}} 1x, /postimg/{{post.header_image_med}} 2x">
+					<img class="center-block post-image img-responsive" src="/postimg/{{post.header_image_thumb}}">
 				</picture>
 				<div class="col-xs-12 post-full-title"><h3>{{post.title}}</h3></div>
 			</div>
@@ -65,8 +65,8 @@
 <div class="post col-xs-12 col-sm-6 col-md-4">
 	<div class="row post-summary-header">
 		<picture class="col-xs-12">
-			<source media="(min-width: 375px) and (max-width: 768px)" srcset="/postimg?img_id={{post.header_image_small}} 1x">
-			<img class="center-block post-image img-responsive" src="/postimg?img_id={{post.header_image_thumb}}">
+			<source media="(min-width: 375px) and (max-width: 768px)" srcset="/postimg/{{post.header_image_small}} 1x">
+			<img class="center-block post-image img-responsive" src="/postimg/{{post.header_image_thumb}}">
 		</picture>
 
 		<div class="col-xs-12 post-summary-title"><h3>{{post.title}}</h3></div>
@@ -106,7 +106,7 @@
 
 {% macro author_img(author_key) %}
 
-	<img class="img-responsive center-block img-circle" src="/userimg?img_id={{author_key}}">
+	<img class="img-responsive center-block img-circle" src="/userimg/{{author_key}}">
 
 {% endmacro %}
 
