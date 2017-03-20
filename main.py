@@ -497,6 +497,8 @@ class DeleteCommentHandler(Handler):
     """
     @decorators.comment_exists
     @decorators.post_exists
+    @decorators.user_logged_in
+    @decorators.user_owns_comment
     def post(self, post, comment):
         print comment.key().id()
         print post.key().id()

@@ -40,4 +40,9 @@ class Comment(db.Model):
             return self.content.replace('\n', '<br>')
 
 
+    def user_is_author(self, user_id):
+        """ Returns if user_id is the same as the user who
+        created this comment
 
+        """
+        return self.user_id == user_id

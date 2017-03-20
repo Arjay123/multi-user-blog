@@ -21,11 +21,12 @@ def post_exists(function):
         post - post found
     """
     @wraps(function)
-    def wrapper(self, post_id, *args):
+    def wrapper(self, post_id, **kwargs):
         key = db.Key.from_path("Post", int(post_id))
         post = db.get(key)
         if post:
-            return function(self, post, *args)
+            kwargs['post'] = post
+            return function(self, **kwargs)
         else:
             print "post doesnt exist"
             self.error(404)
@@ -45,9 +46,9 @@ def user_logged_in(function):
 
     """
     @wraps(function)
-    def wrapper(self, *args):
+    def wrapper(self, **kwargs):
         if self.user:
-            return function(self, *args)
+            return function(self, **kwargs)
         else:
             print "not logged in"
             self.redirect("/signup")
@@ -81,7 +82,7 @@ def user_owns_post(function):
     @wraps(function)
     def wrapper(self, post):
         if post.user_is_author(self.user.key().id()):
-            return function(self, post)
+            return function(self, post=post)
         else:
             print "aint yo post"
             self.error(404)
@@ -111,6 +112,19 @@ def user_exists(function):
     return wrapper
 
 
+def user_owns_comment(function):
+    """ Check if user owns comment
+
+    """
+    @wraps(function)
+    def wrapper(self, comment, **kwargs):
+        if comment.user_is_author(self.user.key().id()):
+            return function(self, comment=comment, **kwargs)
+        else:
+            print "that aint your comment"
+            self.error(404)
+            return
+    return wrapper
 
 
 def comment_exists(function):
@@ -134,13 +148,12 @@ def comment_exists(function):
         comment = db.get(key)
 
         if comment:
-            return function(self, comment)
+            return function(self, post_id=comment.post_id, comment=comment)
         else:
             print "comment dont exist"
             self.error(404)
             return
     return wrapper
-
 
 
 
