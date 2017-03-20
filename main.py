@@ -6,6 +6,7 @@ import random
 import re
 import jinja2
 import webapp2
+import decorators
 from string import letters
 from urllib import urlopen
 
@@ -17,6 +18,8 @@ from google.appengine.ext.webapp import blobstore_handlers
 from models.user import User
 from models.post import Post
 from models.postphoto import PostPhoto
+
+
 
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -195,46 +198,32 @@ class EditPostPage(Handler):
     """ Edit existing post page
 
     """
-    def get(self, post_id):
-        if post_id:
-            post = Post.get_by_id(int(post_id))
-            self.render("editpost.html", post=post)
+    @decorators.post_exists
+    def get(self, post_id, post):
+        self.render("editpost.html", post=post)
 
+    @decorators.post_exists
+    def post(self, post_id, post):
+        new_title = self.request.get("title")
+        new_content = self.request.get("content")
+        new_header_image = self.request.get("img")
 
-    def post(self, post_id):
-        if post_id:
-            post = Post.get_by_id(int(post_id))
+        post.edit_post(new_title, new_content, new_header_image)
 
-            new_title = self.request.get("title")
-            new_content = self.request.get("content")
-            new_header_image = self.request.get("img")
-
-            post.edit_post(new_title, new_content, new_header_image)
-
-            self.render("editpost.html", post=post)
+        self.render("editpost.html", post=post)
 
 
 class DeletePostHandler(Handler):
     """
     Delete post handler
     """
-    def post(self):
-        post_id = self.request.get("id")
+    @decorators.post_exists
+    def get(self, post_id, post):
+        post.delete()
 
-        if post_id:
-            post = Post.get_by_id(int(post_id))
-
-            # only user who created post can delete it
-            if post:
-                if not(self.user and post.author_id == self.user.key().id()):
-                    self.redirect('/signup')
-                    return
-
-                post.delete()
- 
-                # this feels hacky, but it prevents the page from loading
-                # before the post is deleted
-                time.sleep(2)
+        # this feels hacky, but it prevents the page from loading
+        # before the post is deleted
+        time.sleep(2)
 
         self.redirect("/postlist")
 
@@ -449,53 +438,49 @@ class MainPage(Handler):
         self.render("blog.html", posts=posts)
 
 
+
 class PostPage(Handler):
     """ Single post page
 
     """
-    def get(self, post_id):
-        if post_id and post_id.isdigit():
-            post = Post.get_by_id(int(post_id))
+    @decorators.post_exists
+    def get(self, post_id, post):
+        # if post_id and post_id.isdigit():
+        #     post = Post.get_by_id(int(post_id))
+        post.inc_views()
+        post.put()
+        params = { "post": post }
+        if self.user:
+            params["user_liked"] = post.user_liked(self.user.key().id())
+        self.render("post.html", **params)
 
-            if post:
-                post.inc_views()
+
+    @decorators.post_exists
+    def post(self, post_id, post):
+
+        submit = self.request.get("submit")
+        if submit:
+            if submit == "like":
+                post.like(self.user.key().id())
                 post.put()
-                params = { "post": post }
-                if self.user:
-                    params["user_liked"] = post.user_liked(self.user.key().id())
-                self.render("post.html", **params)
-            else:
-                self.redirect("/")
+            elif submit == "unlike":
+                post.unlike(self.user.key().id())
+                post.put()
+            elif submit == "comment":
+                comment = self.request.get("comment")
+                if comment:
+                    post.add_comment(self.user.key().id(), comment)
+                    time.sleep(2)
+            elif submit == "uncomment":
+                comment_id = self.request.get("comment_id")
+                if comment_id:
+                    comment_id = int(comment_id)
+                    post.delete_comment(comment_id)
+                    time.sleep(2)
 
 
-    def post(self, post_id):
-        if post_id and post_id.isdigit():
-            post = Post.get_by_id(int(post_id))
-
-            if post:
-                submit = self.request.get("submit")
-                if submit:
-                    if submit == "like":
-                        post.like(self.user.key().id())
-                        post.put()
-                    elif submit == "unlike":
-                        post.unlike(self.user.key().id())
-                        post.put()
-                    elif submit == "comment":
-                        comment = self.request.get("comment")
-                        if comment:
-                            post.add_comment(self.user.key().id(), comment)
-                            time.sleep(2)
-                    elif submit == "uncomment":
-                        comment_id = self.request.get("comment_id")
-                        if comment_id:
-                            comment_id = int(comment_id)
-                            post.delete_comment(comment_id)
-                            time.sleep(2)
-
-
-                
-                self.redirect("/post/%s" % str(post_id))
+        
+        self.redirect("/post/%s" % str(post_id))
 
 
 class AuthorsPage(Handler):
@@ -849,7 +834,7 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/logout', LogoutPage),
                                ('/post/([0-9]+)', PostPage),
                                ('/postlist', UserPostsPage),
-                               ('/delete', DeletePostHandler),
+                               ('/delete/([0-9]+)', DeletePostHandler),
                                ('/edit/([0-9]+)', EditPostPage),
                                ('/authors', AuthorsPage),
                                ('/author/([0-9]+)', AuthorPage),

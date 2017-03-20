@@ -41,7 +41,8 @@
     <div class="modal-content">
       <div class="modal-body">
       	<h3 class="modal-post-title"></h3>
-        <form action="/delete" method="post">
+        <!-- action added in script below -->
+        <form class="modal-post-form">
           <input class="modal-post-id" name="id" hidden type="text">
           <button class="btn btn-danger" name="submit" value="delete" type="submit">Delete</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -65,7 +66,7 @@
 
 	  var modal = $(this)
 	  modal.find(".modal-post-title").text("Confirm deletion of \"" + title + "\"")
-	  modal.find(".modal-post-id").val(id)
+	  modal.find(".modal-post-form").attr("action", "/delete/" + id)
 	})
 
 </script>
