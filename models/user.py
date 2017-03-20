@@ -72,11 +72,13 @@ class User(db.Model):
 
         """
         pw_hash = make_pw_hash(username, pw)
-        return User(username = username,
+        user = User(username = username,
                     first_name=first_name,
                     last_name=last_name,
                     pw_hash = pw_hash,
                     email = email)
+        user.put()
+        return user
 
 
     @classmethod

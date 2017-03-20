@@ -198,11 +198,13 @@ class EditPostPage(Handler):
 
     """
     @decorators.post_exists
+    @decorators.user_logged_in
     @decorators.user_owns_post
     def get(self, post_id, post):
         self.render("editpost.html", post=post)
 
     @decorators.post_exists
+    @decorators.user_logged_in
     @decorators.user_owns_post
     def post(self, post_id, post):
         new_title = self.request.get("title")
@@ -219,6 +221,7 @@ class DeletePostHandler(Handler):
     Delete post handler
     """
     @decorators.post_exists
+    @decorators.user_logged_in
     @decorators.user_owns_post
     def get(self, post_id, post):
         post.delete()
@@ -234,10 +237,11 @@ class UserPage(UserSettingsHandler):
     """
     Settings page, user can change some of their information from here
     """
+    @decorators.user_logged_in
     def get(self):
         self.render("user.html")
 
-
+    @decorators.user_logged_in
     def post(self):
         first_name = self.request.get("first_name")
         last_name = self.request.get("last_name")
@@ -282,8 +286,10 @@ class LogoutPage(Handler):
     """ Logout page
 
     """
+    @decorators.user_logged_in
     def get(self):
-        self.logout()
+        if self.is_logged_in():
+            self.logout()
         self.redirect("/")
 
 
@@ -291,15 +297,15 @@ class SignupPage(UserSettingsHandler):
     """ Login/New user signup page
 
     """
+    @decorators.user_logged_out
     def get(self):
-
         if self.is_logged_in():
             self.redirect("/")
             return
 
         self.render("signup.html")
 
-
+    @decorators.user_logged_out
     def post(self):
 
         # login
@@ -498,7 +504,8 @@ class AuthorPage(Handler):
     """ Single Author Page
 
     """
-    def get(self, author_id):
+    @decorators.user_exists
+    def get(self, author_id, author):
         if not author_id:
             self.redirect("/")
 
