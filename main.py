@@ -510,7 +510,7 @@ class AuthorsPage(Handler):
     """ Authors page 
 
     """
-    def post(self):
+    def get(self):
         authors = User.gql("ORDER BY first_name, last_name")
         self.render("authors.html", authors=authors)
 
@@ -520,13 +520,9 @@ class AuthorPage(Handler):
 
     """
     @decorators.user_exists
-    def get(self, author_id, author):
-        if not author_id:
-            self.redirect("/")
-
-        author = User.get_by_id(int(author_id))
-        posts = Post.gql("WHERE author_id=%s ORDER BY created DESC" % str(author.key().id()))
-        self.render("author.html", author=author, posts=posts)
+    def get(self, user):
+        posts = Post.gql("WHERE author_id=%s ORDER BY created DESC" % str(user.key().id()))
+        self.render("author.html", author=user, posts=posts)
 
 
 class AboutPage(Handler):

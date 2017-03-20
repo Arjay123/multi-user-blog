@@ -104,7 +104,7 @@ def user_exists(function):
         key = db.Key.from_path("User", int(user_id))
         user = db.get(key)
         if user:
-            return function(self, user_id, user)
+            return function(self, user=user)
         else:
             print "that aint nobody"
             self.error(404)
