@@ -500,8 +500,10 @@ class DeleteCommentHandler(Handler):
     @decorators.user_logged_in
     @decorators.user_owns_comment
     def post(self, post, comment):
-        print comment.key().id()
-        print post.key().id()
+        post.delete_comment(comment.key().id())
+        time.sleep(2)
+
+        self.redirect("/post/%s" % str(post.key().id()))
 
 
 class AuthorsPage(Handler):
