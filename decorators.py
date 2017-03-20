@@ -134,12 +134,13 @@ def comment_exists(function):
         comment = db.get(key)
 
         if comment:
-            return function(self, comment.post_id, comment)
+            return function(self, comment)
         else:
             print "comment dont exist"
             self.error(404)
             return
     return wrapper
+
 
 
 
