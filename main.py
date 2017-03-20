@@ -50,7 +50,6 @@ needed by any handler
 """
 class Handler(webapp2.RequestHandler):
 
-
     def write(self, *a, **kw):
         """ Writes template to response
             
@@ -199,6 +198,7 @@ class EditPostPage(Handler):
 
     """
     @decorators.post_exists
+    @decorators.user_owns_post
     def get(self, post_id, post):
         self.render("editpost.html", post=post)
 

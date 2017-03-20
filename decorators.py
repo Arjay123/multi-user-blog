@@ -1,7 +1,10 @@
+
+
 from functools import wraps
 
 from google.appengine.ext import db
 from models.post import Post
+from models.user import User
 
 
 def post_exists(function):
@@ -19,7 +22,7 @@ def post_exists(function):
         post_id - id of post found
         post - post found
     """
-    @wraps(function)
+
     def wrapper(self, post_id):
         key = db.Key.from_path("Post", int(post_id))
         post = db.get(key)
@@ -30,6 +33,15 @@ def post_exists(function):
             return
     return wrapper
 
+
+def user_owns_post(function):
+    def wrapper(self, post_id, post):
+        if post.user_is_author(self.user.key().id()):
+            return function(self, post_id, post)
+        else:
+            self.error(404)
+            return
+    return wrapper
 
 
             
