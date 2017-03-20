@@ -203,6 +203,7 @@ class EditPostPage(Handler):
         self.render("editpost.html", post=post)
 
     @decorators.post_exists
+    @decorators.user_owns_post
     def post(self, post_id, post):
         new_title = self.request.get("title")
         new_content = self.request.get("content")
@@ -218,6 +219,7 @@ class DeletePostHandler(Handler):
     Delete post handler
     """
     @decorators.post_exists
+    @decorators.user_owns_post
     def get(self, post_id, post):
         post.delete()
 
