@@ -21,11 +21,11 @@ def post_exists(function):
         post - post found
     """
     @wraps(function)
-    def wrapper(self, post_id):
+    def wrapper(self, post_id, *args):
         key = db.Key.from_path("Post", int(post_id))
         post = db.get(key)
         if post:
-            return function(self, post_id, post)
+            return function(self, post, *args)
         else:
             print "post doesnt exist"
             self.error(404)
@@ -79,9 +79,9 @@ def user_owns_post(function):
     user exists before attempting to access user attributes
     """
     @wraps(function)
-    def wrapper(self, post_id, post):
+    def wrapper(self, post):
         if post.user_is_author(self.user.key().id()):
-            return function(self, post_id, post)
+            return function(self, post)
         else:
             print "aint yo post"
             self.error(404)
@@ -106,6 +106,37 @@ def user_exists(function):
             return function(self, user_id, user)
         else:
             print "that aint nobody"
+            self.error(404)
+            return
+    return wrapper
+
+
+
+
+def comment_exists(function):
+    """ Check if comment exists
+
+    If comment exists, return comment and id
+    else, 404 error
+
+    Args:
+        commend_id - id of comment to retrieve
+    """
+    @wraps(function)
+    def wrapper(self, *args):
+        comment_id = self.request.get("comment_id")
+        if not comment_id:
+            print "no comment sent"
+            self.error(404)
+            return
+
+        key = db.Key.from_path("Comment", int(comment_id))
+        comment = db.get(key)
+
+        if comment:
+            return function(self, comment.post_id, comment)
+        else:
+            print "comment dont exist"
             self.error(404)
             return
     return wrapper

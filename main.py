@@ -200,13 +200,13 @@ class EditPostPage(Handler):
     @decorators.post_exists
     @decorators.user_logged_in
     @decorators.user_owns_post
-    def get(self, post_id, post):
+    def get(self, post):
         self.render("editpost.html", post=post)
 
     @decorators.post_exists
     @decorators.user_logged_in
     @decorators.user_owns_post
-    def post(self, post_id, post):
+    def post(self, post):
         new_title = self.request.get("title")
         new_content = self.request.get("content")
         new_header_image = self.request.get("img")
@@ -223,7 +223,7 @@ class DeletePostHandler(Handler):
     @decorators.post_exists
     @decorators.user_logged_in
     @decorators.user_owns_post
-    def get(self, post_id, post):
+    def get(self, post):
         post.delete()
 
         # this feels hacky, but it prevents the page from loading
@@ -452,7 +452,7 @@ class PostPage(Handler):
 
     """
     @decorators.post_exists
-    def get(self, post_id, post):
+    def get(self, post):
         # if post_id and post_id.isdigit():
         #     post = Post.get_by_id(int(post_id))
         post.inc_views()
@@ -464,7 +464,7 @@ class PostPage(Handler):
 
 
     @decorators.post_exists
-    def post(self, post_id, post):
+    def post(self, post):
 
         submit = self.request.get("submit")
         if submit:
@@ -491,11 +491,22 @@ class PostPage(Handler):
         self.redirect("/post/%s" % str(post_id))
 
 
+class DeleteCommentHandler(Handler):
+    """ Handler for deleting comments
+
+    """
+    @decorators.comment_exists
+    @decorators.post_exists
+    def post(self, post, comment):
+        print comment.key().id()
+        print post.key().id()
+
+
 class AuthorsPage(Handler):
     """ Authors page 
 
     """
-    def get(self):
+    def post(self):
         authors = User.gql("ORDER BY first_name, last_name")
         self.render("authors.html", authors=authors)
 
@@ -848,4 +859,5 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/authors', AuthorsPage),
                                ('/author/([0-9]+)', AuthorPage),
                                ('/init', InitHandler),
-                               ('/about', AboutPage)])
+                               ('/about', AboutPage),
+                               ('/uncomment', DeleteCommentHandler)])
