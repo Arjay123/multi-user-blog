@@ -185,7 +185,7 @@ def comment_exists(function):
         comment = db.get(key)
 
         if comment:
-            return function(self, post_id=comment.post_id, comment=comment)
+            return function(self, post_id=comment.post.key().id(), comment=comment)
         else:
             print "comment dont exist"
             self.error(404)

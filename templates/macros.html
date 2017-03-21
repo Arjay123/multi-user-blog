@@ -34,7 +34,7 @@
 			<div class="row post-full-info">
 				<div class="col-xs-6 post-author"><h6>{{post.get_author_name()}}</h6></div>
 				<div class="col-xs-6 text-right post-stats">
-					{{ post_stats(post.comment_num, post.likes | length, post.views) }}
+					{{ post_stats(post.get_comments_num(), post.likes | length, post.views) }}
 				</div>
 			</div>
 

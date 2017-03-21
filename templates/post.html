@@ -1,31 +1,12 @@
 {% extends "base.html" %}
-{% from "macros.html" import post_stats %}
+{% from "macros.html" import post_stats, post_full %}
 
 {% block title %}Post{% endblock %}
 {% block content %}
 
 <div class="row">
 	<div class="col-xs-10 col-xs-offset-1">
-		<div class="row post-summary-header">
-			<picture class="col-xs-12">
-				<source media="(min-width: 768px)" srcset="/postimg/{{post.header_image_med}} 1x, /postimg/{{post.header_image_large}} 2x">
-				<source media="(min-width: 375px)" srcset="/postimg/{{post.header_image_small}} 1x, /postimg/{{post.header_image_med}} 2x">
-				<img class="center-block post-image img-responsive" src="/postimg/{{post.header_image_thumb}}">
-			</picture>
-			<div class="col-xs-12 post-summary-title"><h3>{{post.title}}</h3></div>
-		</div>
-		<div class="row post-summary-info">
-			<div class="col-xs-6 post-author"><h6>{{post.get_author_name()}}</h6></div>
-			<div class="col-xs-6 text-right post-stats">
-				{{ post_stats(post.comment_num, post.likes | length, post.views) }}
-			</div>
-		</div>
-		<div class="row post-summary-content">
-			<div class="col-xs-12 post-summary-content"><p>{{post.get_formatted_text() | safe }}</p></div>
-		</div>
-		<div class="row row-eq-height post-summary-footer">
-			<div class="col-xs-6 post-summary-date pull-center"><h5><small>{{post.created.date().strftime("%b %d, %Y")}}</small></h5></div>
-		</div>
+		{{ post_full(post) }}
 	</div>
 </div>
 
@@ -75,14 +56,14 @@
 	
 		<div class="row comment">
 			<div class="hidden-xs col-sm-2">
-				<img class="img-responsive center-block img-circle" src="/userimg/{{comment.user_id}}">
+				<img class="img-responsive center-block img-circle" src="/userimg/{{comment.user.key().id()}}">
 			</div>
 			<div class="col-xs-12 col-sm-10">
 				<h4>{{comment.get_user_name()}}</h4>
 				<p>{{comment.get_formatted_text() | safe}}</p>
 
 
-				{% if user and user.key().id() == comment.user_id %}
+				{% if user and comment.user_is_author(user.key().id()) %}
 				<form action="/uncomment" method="post">
 					<input type="text" hidden name="comment_id" value="{{comment.key().id()}}">
 					<button class="btn btn-danger pull-right" type="submit" name="submit" value="uncomment">Delete this comment</button>

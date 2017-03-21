@@ -1,4 +1,4 @@
-from comment import Comment
+
 from google.appengine.ext import db
 from google.appengine.api import images
 from postphoto import PostPhoto
@@ -33,7 +33,6 @@ class Post(db.Model):
     author = db.ReferenceProperty(User, collection_name="posts")
     views = db.IntegerProperty(default=0)
     likes = db.ListProperty(int, default=[])
-    comment_num = db.IntegerProperty(default=0)
 
 
     @classmethod
@@ -93,42 +92,16 @@ class Post(db.Model):
         Returns:
             Returns iterable to loop through results of query
         """
-        q = Comment.gql("WHERE post_id=%s ORDER BY created DESC" 
-            % str(self.key().id()))
-
-        return q.run()
+        return self.comments
 
 
-    def add_comment(self, user_id, content):
-        """ Creates new comment and increments comment count
-        
-        Comment created is associated with a single user and a single post
-
-        Args:
-            user_id - id of user who submitted
-            content - body of comment
+    def get_comments_num(self):
+        """ Returns number of comments on this post
+            
+            Returns:
+                Integer representing number of comments 
         """
-        comment = Comment(user_id=user_id,
-                          post_id=self.key().id(),
-                          content=content)
-        comment.put()
-
-        self.comment_num = self.comment_num + 1
-        self.put()
-
-
-    def delete_comment(self, comment_id):
-        """ Deletes comment using id and decrements comment count
-        
-        Args:
-            comment_id - id of comment
-        """
-        comment = Comment.get_by_id(comment_id)
-        if comment:
-            comment.delete()
-
-            self.comment_num = self.comment_num - 1
-            self.put()
+        return self.comments.count()
 
 
     def user_is_author(self, author_id):

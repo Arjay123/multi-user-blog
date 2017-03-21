@@ -1,4 +1,5 @@
 from google.appengine.ext import db
+from post import Post
 from user import User
 
 
@@ -11,8 +12,8 @@ class Comment(db.Model):
         content: body of comment
         created: when comment was posted
     """
-    post_id = db.IntegerProperty(required=True)
-    user_id = db.IntegerProperty(required=True)
+    post = db.ReferenceProperty(Post, collection_name="comments")
+    user = db.ReferenceProperty(User, collection_name="comments")
     content = db.TextProperty(required=True)
     created = db.DateTimeProperty(auto_now_add=True)
 
@@ -22,12 +23,7 @@ class Comment(db.Model):
         Returns:
             first and last name of user as a string
         """
-        if self.user_id:
-            key = db.Key.from_path('User', self.user_id)
-            user = db.get(key)
-
-            if user:
-                return user.get_full_name()
+        return self.user.get_full_name()
 
 
     def get_formatted_text(self):
@@ -45,4 +41,4 @@ class Comment(db.Model):
         created this comment
 
         """
-        return self.user_id == user_id
+        return self.user.key().id() == user_id

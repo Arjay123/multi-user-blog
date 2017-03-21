@@ -16,6 +16,7 @@ from google.appengine.ext import db
 from google.appengine.ext import blobstore
 from google.appengine.ext.webapp import blobstore_handlers
 
+from models.comment import Comment
 from models.user import User
 from models.post import Post
 from models.postphoto import PostPhoto
@@ -189,8 +190,6 @@ class UserPostsPage(Handler):
     
     """
     def get(self):
-        #posts = Post.gql("WHERE author_id=%s ORDER BY created DESC" % 
-         #   str(self.user.key().id()))
         self.render("post_list.html", posts=self.user.posts)
 
 
@@ -468,15 +467,12 @@ class PostPage(Handler):
                 post.unlike(self.user.key().id())
                 post.put()
             elif submit == "comment":
-                comment = self.request.get("comment")
-                if comment:
-                    post.add_comment(self.user.key().id(), comment)
-                    time.sleep(2)
-            elif submit == "uncomment":
-                comment_id = self.request.get("comment_id")
-                if comment_id:
-                    comment_id = int(comment_id)
-                    post.delete_comment(comment_id)
+                content = self.request.get("comment")
+                if content:
+                    comment = Comment(user = self.user,
+                                      post = post,
+                                      content = content)
+                    comment.put()
                     time.sleep(2)
 
 
@@ -493,7 +489,7 @@ class DeleteCommentHandler(Handler):
     @decorators.user_logged_in
     @decorators.user_owns_comment
     def post(self, post, comment):
-        post.delete_comment(comment.key().id())
+        comment.delete()
         time.sleep(2)
 
         self.redirect("/post/%s" % str(post.key().id()))
@@ -831,8 +827,10 @@ class InitHandler(Handler):
 
             for key in users_who_like:
                 post.like(user_ids[key])
-                post.add_comment(int(user_ids[key]), 
-                                     random.choice(user_comments[key]))
+                comment = Comment(user = User.get_by_id(int(user_ids[key])),
+                                  post = post,
+                                  content = random.choice(user_comments[key]))
+                comment.put()
 
             post.put()
 
