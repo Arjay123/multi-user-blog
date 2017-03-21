@@ -1,6 +1,7 @@
 from functools import wraps
 
 from google.appengine.ext import db
+
 from models.post import Post
 from models.user import User
 

@@ -30,14 +30,14 @@ class Post(db.Model):
     header_image_large = db.StringProperty()
     snippet = db.TextProperty()
     created = db.DateTimeProperty(auto_now_add=True)
-    author_id = db.IntegerProperty(required=True)
+    author = db.ReferenceProperty(User, collection_name="posts")
     views = db.IntegerProperty(default=0)
     likes = db.ListProperty(int, default=[])
     comment_num = db.IntegerProperty(default=0)
 
 
     @classmethod
-    def create_post(cls, title, content, author_id, img):
+    def create_post(cls, title, content, author, img):
         """ Create post
         
         Creates post object w/ snippet and header images
@@ -49,8 +49,8 @@ class Post(db.Model):
             img - img to be resized for header images
         """
         post = Post(title=title, 
-                    content=content, 
-                    author_id=author_id)
+                    content=content,
+                    author=author)
 
         post.change_header_image(img)
         post.create_snippet()
@@ -135,7 +135,7 @@ class Post(db.Model):
         """ Returns if user is the author of the post 
 
         """
-        return author_id == self.author_id
+        return author_id == self.author.key().id()
 
 
     def like(self, author_id):
@@ -262,9 +262,7 @@ class Post(db.Model):
         Returns:
             Returns first and last name of the author
         """
-        author = User.get_by_id(self.author_id)
-        if author:
-            return author.get_full_name()
+        self.author.get_full_name()
 
     
     def delete(self):

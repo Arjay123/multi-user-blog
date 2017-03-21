@@ -189,9 +189,9 @@ class UserPostsPage(Handler):
     
     """
     def get(self):
-        posts = Post.gql("WHERE author_id=%s ORDER BY created DESC" % 
-            str(self.user.key().id()))
-        self.render("post_list.html", posts=posts.fetch(limit=None))
+        #posts = Post.gql("WHERE author_id=%s ORDER BY created DESC" % 
+         #   str(self.user.key().id()))
+        self.render("post_list.html", posts=self.user.posts)
 
 
 class EditPostPage(Handler):
@@ -514,8 +514,8 @@ class AuthorPage(Handler):
     """
     @decorators.user_exists
     def get(self, user):
-        posts = Post.gql("WHERE author_id=%s ORDER BY created DESC" % str(user.key().id()))
-        self.render("author.html", author=user, posts=posts)
+        #posts = Post.gql("WHERE author_id=%s ORDER BY created DESC" % str(user.key().id()))
+        self.render("author.html", author=user, posts=user.posts)
 
 
 class AboutPage(Handler):
@@ -557,7 +557,7 @@ class NewPostPage(Handler):
         # create post
         post = Post.create_post(title, 
                          content, 
-                         self.user.key().id(), 
+                         self.user, 
                          header_image_original)
 
         self.redirect("/post/%s" % str(post.key().id()))
@@ -815,7 +815,7 @@ class InitHandler(Handler):
             # create post object
             post = Post(title=title, 
                         content=content, 
-                        author_id=int(author_id),
+                        author=User.get_by_id(author_id),
                         views=random.choice(range(25, 100)))
             try:
                 post.change_header_image(header_img)
