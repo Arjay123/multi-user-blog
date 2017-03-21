@@ -485,7 +485,7 @@ class PostPage(Handler):
                                       post = post,
                                       content = content)
                     comment.put()
-                    time.sleep(2)
+                    #time.sleep(2)
 
 
         
@@ -502,7 +502,7 @@ class DeleteCommentHandler(Handler):
     @decorators.user_owns_comment
     def post(self, post, comment):
         comment.delete()
-        time.sleep(2)
+        #time.sleep(2)
 
         self.redirect("/post/%s" % str(post.key().id()))
 
