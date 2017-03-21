@@ -262,7 +262,7 @@ class Post(db.Model):
         Returns:
             Returns first and last name of the author
         """
-        self.author.get_full_name()
+        return self.author.get_full_name()
 
     
     def delete(self):
