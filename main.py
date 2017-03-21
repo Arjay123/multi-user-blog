@@ -208,16 +208,19 @@ class EditPostPage(Handler):
     @decorators.user_logged_in
     @decorators.user_owns_post
     def post(self, post):
-        new_title = self.request.get("title")
-        new_content = self.request.get("content")
-        new_header_image = self.request.get("img")
 
-        post.edit_post(new_title, new_content)
-        post.delete_header_images()
+        if self.request.get("submit") == "submit":
+            new_title = self.request.get("title")
+            new_content = self.request.get("content")
+            new_header_image = self.request.get("img")
 
-        PostPhoto.add_image_to_post(post, new_header_image)
+            post.edit_post(new_title, new_content)
 
-        self.render("editpost.html", post=post)
+            if new_header_image:
+                post.delete_header_images()
+                PostPhoto.add_image_to_post(post, new_header_image)
+
+        self.redirect("/post/%s" % post.key().id())
 
 
 class DeletePostHandler(Handler):
@@ -536,6 +539,10 @@ class NewPostPage(Handler):
 
     @decorators.user_logged_in
     def post(self):
+
+        if self.request.get("submit") == "cancel":
+            self.redirect("/")
+            return
 
         title = self.request.get("title")
         content = self.request.get("content")

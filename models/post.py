@@ -171,6 +171,15 @@ class Post(db.Model):
 
 
     def get_header_image_id(self, size):
+        """ Gets image id of certain size
+        
+        Args:
+            size - size of image to retrieve
+
+        Returns:
+            Integer representing id of image retrieved
+            None if not found
+        """
         print size
         res = self.photos.filter("size =", size).get()
 
@@ -179,10 +188,13 @@ class Post(db.Model):
 
 
     def delete_header_images(self):
+        """ Deletes all associated images
+
+        """
         for photo in self.photos:
             photo.delete()
 
-    
+
     def delete(self):
         """ Overrides db.Model delete, entity deletes all associated 
         content before deleting itself
