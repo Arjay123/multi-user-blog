@@ -176,9 +176,11 @@ class UserSettingsHandler(Handler):
     def valid_username(self, username):
         return username and self.USER_RE.match(username)
 
+
     PASS_RE = re.compile(r"^.{3,20}$")
     def valid_password(self, password):
         return password and self.PASS_RE.match(password)
+
 
     EMAIL_RE  = re.compile(r'^[\S]+@[\S]+\.[\S]+$')
     def valid_email(self, email):
@@ -203,6 +205,7 @@ class EditPostPage(Handler):
     @decorators.user_owns_post
     def get(self, post):
         self.render("editpost.html", post=post)
+
 
     @decorators.post_exists
     @decorators.user_logged_in
@@ -247,6 +250,7 @@ class UserPage(UserSettingsHandler):
     @decorators.user_logged_in
     def get(self):
         self.render("user.html")
+
 
     @decorators.user_logged_in
     def post(self):
@@ -311,6 +315,7 @@ class SignupPage(UserSettingsHandler):
             return
 
         self.render("signup.html")
+
 
     @decorators.user_logged_out
     def post(self):
@@ -536,6 +541,7 @@ class NewPostPage(Handler):
     @decorators.user_logged_in
     def get(self):
         self.render("newpost.html")
+
 
     @decorators.user_logged_in
     def post(self):
