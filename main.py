@@ -189,6 +189,7 @@ class UserPostsPage(Handler):
     """ List of posts created by current logged in user
     
     """
+    @decorators.user_logged_in
     def get(self):
         self.render("post_list.html", posts=self.user.posts)
 
@@ -211,7 +212,10 @@ class EditPostPage(Handler):
         new_content = self.request.get("content")
         new_header_image = self.request.get("img")
 
-        post.edit_post(new_title, new_content, new_header_image)
+        post.edit_post(new_title, new_content)
+        post.delete_header_images()
+
+        PostPhoto.add_image_to_post(post, new_header_image)
 
         self.render("editpost.html", post=post)
 
@@ -438,7 +442,6 @@ class MainPage(Handler):
         self.render("blog.html", posts=posts)
 
 
-
 class PostPage(Handler):
     """ Single post page
 
@@ -456,6 +459,7 @@ class PostPage(Handler):
 
 
     @decorators.post_exists
+    @decorators.user_logged_in
     def post(self, post):
 
         submit = self.request.get("submit")
@@ -477,7 +481,7 @@ class PostPage(Handler):
 
 
         
-        self.redirect("/post/%s" % str(post_id))
+        self.redirect("/post/%s" % str(post.key().id()))
 
 
 class DeleteCommentHandler(Handler):
@@ -526,14 +530,11 @@ class NewPostPage(Handler):
     """ Handler for new post submissions
 
     """
+    @decorators.user_logged_in
     def get(self):
-        if not self.is_logged_in():
-            self.redirect("/signup")
-            return
-
         self.render("newpost.html")
 
-
+    @decorators.user_logged_in
     def post(self):
 
         title = self.request.get("title")
@@ -553,8 +554,9 @@ class NewPostPage(Handler):
         # create post
         post = Post.create_post(title, 
                          content, 
-                         self.user, 
-                         header_image_original)
+                         self.user)
+
+        PostPhoto.add_image_to_post(post, header_image_original)
 
         self.redirect("/post/%s" % str(post.key().id()))
 
@@ -813,13 +815,15 @@ class InitHandler(Handler):
                         content=content, 
                         author=User.get_by_id(author_id),
                         views=random.choice(range(25, 100)))
-            try:
-                post.change_header_image(header_img)
-            except images.BadImageError:
-                print img_url
+            
 
             post.create_snippet()
             post.put()
+
+            try:
+                PostPhoto.add_image_to_post(post, header_img)
+            except images.BadImageError:
+                print img_url
 
             # likes and comments
             users_who_like = random.sample(user_ids.keys(), 
