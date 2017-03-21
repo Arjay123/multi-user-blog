@@ -7,8 +7,8 @@ class Comment(db.Model):
     """ A comment submitted by a user about a Post entity
 
     Attributes:
-        post_id: id of the post this comment is tied to
-        user_id: id of the user who submitted this comment
+        post: reference to post this comment is tied to
+        user: reference to user who submitted this comment
         content: body of comment
         created: when comment was posted
     """
@@ -16,6 +16,7 @@ class Comment(db.Model):
     user = db.ReferenceProperty(User, collection_name="comments")
     content = db.TextProperty(required=True)
     created = db.DateTimeProperty(auto_now_add=True)
+
 
     def get_user_name(self):
         """ Gets first and last name of user tied to this comment

@@ -17,7 +17,7 @@ class Post(db.Model):
         header_image_large: id of the large size header image
         snippet: the first paragraph of the body
         created: when the post was submitted
-        author_id: id of the user who submitted the post
+        author: reference to user who submitted the post
         views: number of views this post has gotten
         likes: ids of users who liked the post
         comment_num: number of comments on this post
